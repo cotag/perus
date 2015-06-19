@@ -1,5 +1,5 @@
 #!/usr/bin/ruby
-#require 'perus/pinger'
+require 'perus/pinger'
 require 'optparse'
 
 config_path = '/etc/perus-pinger'
