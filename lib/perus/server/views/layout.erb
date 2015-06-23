@@ -1,4 +1,3 @@
-<!doctype html>
 <html>
     <head>
         <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,300,600,400' rel='stylesheet' type='text/css'>
@@ -7,6 +6,31 @@
         <title>Overview</title>
     </head>
     <body>
-        <%= yield %>
+        <header>
+            <h1><%= @site_name %></h1>
+            <nav>
+                <ul>
+                    <li>
+                        <a href="/">Overview</a>
+                    </li>
+                    <li>
+                        <a href="/systems">Systems</a>
+                        <ul style="display: none">
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="/admin">Admin</a>
+                        <ul>
+                            <li><a href="/admin/systems">Systems</a></li>
+                            <li><a href="/admin/groups">Groups</a></li>
+                            <li><a href="/admin/templates">Templates</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+        <main>
+            <%= yield %>
+        </main>
     </body>
 </html>

@@ -5,7 +5,8 @@ module Server::Config
         'uploads_dir' => './uploads',
         'db_path' => './perus.db',
         'listen' => '0.0.0.0',
-        'port' => 3000
+        'port' => 3000,
+        'site_name' => 'Perus'
     }
 
     def self.load(path)

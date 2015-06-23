@@ -2,7 +2,7 @@ Sequel.migration do
     up do
         create_table(:systems) do
             primary_key :id
-            String  :name, null: false
+            String  :name, null: false, unique: true
             String  :display_name
             String  :ip
             String  :orientation

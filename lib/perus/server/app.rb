@@ -1,61 +1,69 @@
 require 'sinatra/base'
 require 'sinatra/synchrony'
+require 'sinatra/reloader'
 require 'sequel'
 require 'json'
 
-class Server::App < Sinatra::Application
-    register Sinatra::Synchrony
+module Server
+    class App < Sinatra::Application
+        #----------------------
+        # config
+        #----------------------
+        register Sinatra::Synchrony
 
-    configure do
-        set :root, File.join(__dir__)
-    end
-
-    # static index page
-    get '/' do
-        erb :index
-    end
-
-    # info page for a system
-    get '/systems/:id' do
-    end
-
-    # receive data from a system
-    post '/ping' do
-        ip = request.ip
-
-        File.open(File.join(Config.screenshots_dir, "#{ip}.jpg"), 'wb') do |f|
-            f.write params[:screenshot][:tempfile].read
+        configure do
+            set :root, File.join(__dir__)
         end
 
-        File.open(File.join(Config.data_dir, "#{ip}.json"), 'w') do |f|
-            f.write params[:data]
+        configure :development do
+            register Sinatra::Reloader
         end
 
-        content_type :json
-        {success: true}.to_json
-    end
+        before do
+            @site_name = Server::Config.site_name
+        end
 
-    # static admin index page
-    get '/admin' do
-    end
 
-    # list of systems
-    get '/admin/systems' do
-    end
+        #----------------------
+        # admin pages
+        #----------------------
+        extend Server::Admin
 
-    # create a system
-    post '/admin/systems' do
-    end
+        admin :system
+        admin :template
+        admin :group
 
-    # view a system
-    get '/admin/systems/:id' do
-    end
+        # static admin index page
+        get '/admin' do
+        end
 
-    # update a system
-    put '/admin/systems/:id' do
-    end
 
-    # delete a system
-    delete '/admin/systems/:id' do
+        #----------------------
+        # frontend
+        #----------------------
+        # static index page
+        get '/' do
+            erb :index
+        end
+
+        # info page for a system
+        get '/systems/:id' do
+        end
+
+        # receive data from a system
+        post '/ping' do
+            ip = request.ip
+
+            File.open(File.join(Config.screenshots_dir, "#{ip}.jpg"), 'wb') do |f|
+                f.write params[:screenshot][:tempfile].read
+            end
+
+            File.open(File.join(Config.data_dir, "#{ip}.json"), 'w') do |f|
+                f.write params[:data]
+            end
+
+            content_type :json
+            {success: true}.to_json
+        end
     end
 end

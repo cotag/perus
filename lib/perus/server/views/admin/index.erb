@@ -1,0 +1,18 @@
+<h1><%= @title.pluralize %></h1>
+
+<section>
+    <% unless @records.empty? %>
+        <table>
+            <% @records.each do |record| %>
+                <tr>
+                    <td><a href="/admin/<%= @plural %>/<%= record.id %>"><%= record.name %></a></td>
+                    <td><a href="/admin/<%= @plural %>/<%= record.id %>">Delete</a></td>
+                </tr>
+            <% end %>
+        </table>
+    <% else %>
+        <p>No <%= @plural %></p>
+    <% end %>
+</section>
+
+<p class="actions"><a href="/admin/<%= @plural %>/new">New <%= @title.downcase %></a></p>

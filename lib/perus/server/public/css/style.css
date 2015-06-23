@@ -1,3 +1,166 @@
 html {
     font-family: 'Open Sans', Helvetica, sans-serif;
 }
+
+* {
+    box-sizing: border-box;
+}
+
+a {
+    color: #444;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+body > header {
+    background-color: #202328;
+    position: fixed;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    width: 200px;
+}
+
+    body > header h1 {
+        background-color: #9DE0CA;
+        color: rgba(255, 255, 255, 0.9);
+        text-transform: none;
+        font-weight: 300;
+        font-size: 26px;
+        padding: 25px 15px;
+    }
+
+        body > header > nav {
+            padding: 10px 15px 15px 15px;
+        }
+
+            body > header > nav > ul > li {
+                padding-top: 15px;
+            }
+
+            body > header a {
+                color: rgba(255, 255, 255, 0.5);
+                text-decoration: none;
+                font-weight: 300;
+                display: block;
+                padding: 10px 5px;
+                font-size: 14px;
+            }
+
+            body > header a.selected {
+                color: rgba(255, 255, 255, 0.8);
+            }
+
+            body > header > nav > ul ul {
+                padding-left: 12px;
+                padding-top: 3px;
+            }
+
+                body > header > nav > ul ul a {
+                    font-size: 13px;
+                }
+
+main {
+    padding: 28px 40px 40px 240px;
+    background-color: #f5f5f5;
+    min-height: 100%;
+}
+
+    main > h1 {
+        text-transform: uppercase;
+        font-size: 24px;
+        font-weight: 300;
+        color: #555;
+        margin-bottom: 30px;
+    }
+
+    main > form, main > section {
+        background-color: white;
+        padding: 20px;
+        border-radius: 4px;
+        border-bottom: 1px solid #ddd;
+        width: 100%;
+    }
+
+        /* forms */
+        main > form > p {
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+            main > form > p label {
+                position: absolute;
+                top: 3px;
+                left: 0px;
+                font-size: 13px;
+                color: #444;
+            }
+
+            main > form > p span {
+                display: inline-block;
+                padding-left: 100px;
+                width: 100%;
+            }
+
+            main > form > p input[type=text], main > form > p textarea {
+                width: 100%;
+                border: 1px solid #ddd;
+                font-size: 13px;
+                min-height: 30px;
+                border-radius: 2px;
+                outline: none;
+            }
+
+            main > form > p input[type=text]:focus, main > form > p textarea:focus {
+                border-color: #3497FF;
+            }
+
+            main > form > p textarea {
+                min-height: 50px;
+            }
+
+            main > form > p.actions {
+                margin-top: 20px;
+                text-align: right;
+                margin-bottom: 0px;
+            }
+
+        /* tables */
+        main table {
+            width: 100%;
+        }
+
+        main table tr:nth-child(odd) td {
+            background-color: #f9f9f9;
+        }
+
+        main table td {
+            padding: 5px 0px 5px 5px;
+            font-size: 13px;
+        }
+
+        /* delete */
+        main table td:last-child {
+            width: 80px;
+            text-align: right;
+            padding-right: 10px;
+        }
+
+            main table td:last-child a {
+                text-transform: uppercase;
+                font-size: 11px;
+            }
+
+        main > .actions {
+            text-align: right;
+            margin-top: 20px;
+            padding-right: 10px;
+        }
+
+            main > .actions a {
+                font-size: 13px;
+            }
+
