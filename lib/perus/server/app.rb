@@ -20,7 +20,7 @@ module Server
         end
 
         before do
-            @site_name = Server::Config.site_name
+            @site_name = Server::Options.site_name
         end
 
 
@@ -30,11 +30,12 @@ module Server
         extend Server::Admin
 
         admin :system
-        admin :template
+        admin :config
         admin :group
 
         # static admin index page
         get '/admin' do
+            redirect '/admin/systems'
         end
 
 
@@ -54,11 +55,11 @@ module Server
         post '/ping' do
             ip = request.ip
 
-            File.open(File.join(Config.screenshots_dir, "#{ip}.jpg"), 'wb') do |f|
+            File.open(File.join(Options.screenshots_dir, "#{ip}.jpg"), 'wb') do |f|
                 f.write params[:screenshot][:tempfile].read
             end
 
-            File.open(File.join(Config.data_dir, "#{ip}.json"), 'w') do |f|
+            File.open(File.join(Options.data_dir, "#{ip}.json"), 'w') do |f|
                 f.write params[:data]
             end
 

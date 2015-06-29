@@ -1,9 +1,10 @@
 class Server::Group < Sequel::Model
     plugin :validation_helpers
-
+    one_to_many :systems
+    
     def validate
         super
-        validates_presence [:name]
-        validates_unique :name
+        validates_presence  :name
+        validates_unique    :name
     end
 end

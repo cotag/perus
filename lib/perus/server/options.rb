@@ -1,6 +1,6 @@
 require 'inifile'
 
-module Server::Config
+module Server::Options
     Defaults = {
         'uploads_dir' => './uploads',
         'db_path' => './perus.db',
@@ -10,12 +10,12 @@ module Server::Config
     }
 
     def self.load(path)
-        user_config = IniFile.load(path)
-        user_config ||= {}  # if no user config was provided
-        @config = Defaults.merge(user_config)
+        user_options = IniFile.load(path)
+        user_options ||= {}  # if no user options were provided
+        @options = Defaults.merge(user_options)
     end
 
     def self.method_missing(name, *params, &block)
-        @config[name.to_s]
+        @options[name.to_s]
     end
 end

@@ -1,8 +1,6 @@
-class Server::System < Sequel::Model
+class Server::Config < Sequel::Model
     plugin :validation_helpers
-    many_to_one :config
-    many_to_one :group
-    one_to_one  :value
+    one_to_many :systems
 
     def validate
         super

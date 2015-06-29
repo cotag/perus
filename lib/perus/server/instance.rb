@@ -1,17 +1,17 @@
 require 'optparse'
 require 'thin'
 
-DEFAULT_CONFIG_PATH = '/etc/perus-server'
+DEFAULT_OPTIONS_PATH = '/etc/perus-server'
 
 class Server::Instance
     def run
-        config_path = DEFAULT_CONFIG_PATH
+        options_path = DEFAULT_OPTIONS_PATH
 
         ARGV.options do |opts|
             opts.banner = "Usage: perus-server [options]"
 
             opts.on('-c', '--config', String, 'Path to config file (default: /etc/perus-server)') do |c|
-                config_path = c
+                options_path = c
             end
 
             opts.on('-h', '--help', 'Prints this help') do
@@ -22,16 +22,16 @@ class Server::Instance
             opts.parse!
         end
 
-        self.class.init(config_path)
+        self.class.init(options_path)
         Thin::Server.start(
-            Server::Config.listen,
-            Server::Config.port.to_i,
+            Server::Options.listen,
+            Server::Options.port.to_i,
             Server::App
         )
     end
 
-    def self.init(config_path = DEFAULT_CONFIG_PATH)
-        Server::Config.load(config_path)
+    def self.init(options_path = DEFAULT_OPTIONS_PATH)
+        Server::Options.load(options_path)
         Server::DB.start
     end
 

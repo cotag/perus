@@ -112,6 +112,7 @@ main {
                 min-height: 30px;
                 border-radius: 2px;
                 outline: none;
+                padding: 5px;
             }
 
             main > form > p input[type=text]:focus, main > form > p textarea:focus {

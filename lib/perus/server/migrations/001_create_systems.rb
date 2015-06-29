@@ -7,7 +7,8 @@ Sequel.migration do
             String  :ip
             String  :orientation
             Integer :group_id
-            String  :config, text: true
+            Integer :config_id
+            String  :links, text: true
         end
     end
 

@@ -1,5 +1,5 @@
 module Server
-    require './server/config'
+    require './server/options'
     require './server/form'
     require './server/admin'
     require './server/app'
