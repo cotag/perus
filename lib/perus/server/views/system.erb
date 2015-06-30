@@ -1,0 +1,7 @@
+<h1>System: <%= @system.display_name %></h1>
+
+<img src="<%= @uploads['screenshot'] %>">
+
+<% @metrics.each do |(metric, values)| %>
+    <p><%= metric %>: <%= values.first.str_value || values.first.num_value %></p>
+<% end %>

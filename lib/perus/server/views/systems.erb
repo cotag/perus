@@ -1,0 +1,9 @@
+<h1>Systems</h1>
+
+<% unless @systems.empty? %>
+    <% @systems.each do |system| %>
+        <a href="/systems/<%= system.id %>"><%= system.display_name %></a></td>
+    <% end %>
+<% else %>
+    <p>No Systems</p>
+<% end %>

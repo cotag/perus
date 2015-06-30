@@ -3,7 +3,8 @@ module Metrics
         option :drive, '/dev/sda1'
         
         def measure(results)
-            percent = `df -h / | awk '#{options.drive} {print $5}'`
+            regex = "/^#{options.drive.gsub("/", "\\/")}/"
+            percent = `df -h / | awk '#{regex} {print $5}'`
             results[:hd_used] = percent.to_i
         end
     end

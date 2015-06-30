@@ -4,11 +4,13 @@ Sequel.migration do
             primary_key :id
             String  :name, null: false, unique: true
             String  :display_name
-            String  :ip
             String  :orientation
             Integer :group_id
             Integer :config_id
             String  :links, text: true
+            String  :ip
+            String  :uploads, text: true
+            Integer :last_updated
         end
     end
 

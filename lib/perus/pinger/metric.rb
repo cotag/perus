@@ -10,7 +10,7 @@ module Metrics
         end
 
         def self.defaults
-            @defaults
+            @defaults || {}
         end
 
         def initialize(options)

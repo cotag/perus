@@ -13,7 +13,7 @@ module Server::Admin
                 before do
                     @plural = '#{plural}'
                     @title = '#{title}'
-                    @site_name = Server::Options.site_name
+                    @site_name = Server.options.site_name
                 end
 
                 # list

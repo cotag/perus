@@ -2,6 +2,14 @@ require 'optparse'
 require 'thin'
 
 DEFAULT_OPTIONS_PATH = '/etc/perus-server'
+DEFAULT_OPTIONS = {
+    'uploads_dir' => './uploads',
+    'uploads_url' => 'http://localhost:3000/uploads/',
+    'db_path' => './perus.db',
+    'listen' => '0.0.0.0',
+    'port' => 3000,
+    'site_name' => 'Perus'
+}
 
 class Server::Instance
     def run
@@ -24,14 +32,14 @@ class Server::Instance
 
         self.class.init(options_path)
         Thin::Server.start(
-            Server::Options.listen,
-            Server::Options.port.to_i,
+            Server.options.listen,
+            Server.options.port.to_i,
             Server::App
         )
     end
 
     def self.init(options_path = DEFAULT_OPTIONS_PATH)
-        Server::Options.load(options_path)
+        Server.options.load(options_path, DEFAULT_OPTIONS)
         Server::DB.start
     end
 
