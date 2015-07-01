@@ -1,6 +1,7 @@
 require './options'
 
 module Server
+    require './server/helpers'
     require './server/form'
     require './server/admin'
     require './server/app'

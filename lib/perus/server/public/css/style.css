@@ -52,6 +52,7 @@ body > header {
 
             body > header a.selected {
                 color: rgba(255, 255, 255, 0.8);
+                font-weight: 400;
             }
 
             body > header > nav > ul ul {

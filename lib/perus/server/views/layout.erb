@@ -11,13 +11,13 @@
             <nav>
                 <ul>
                     <li>
-                        <a href="/">Overview</a>
+                        <%= nav_item('/', 'Overview', false) %>
                     </li>
                     <li>
-                        <a href="/systems">Systems</a>
+                        <%= nav_item('/systems', 'Systems', false) %>
                         <ul>
                             <% @groups.each do |group| %>
-                                <li><a href="/groups/<%= group.id %>/systems"><%= group.name %></a></li>
+                                <%= nav_item("/groups/#{group.id}/systems", group.name) %>
                             <% end %>
                         </ul>
                     </li>
@@ -25,9 +25,9 @@
                         <a href="/admin">Admin</a>
                         <% if request.path.start_with?('/admin') %>
                             <ul>
-                                <li><a href="/admin/systems">Systems</a></li>
-                                <li><a href="/admin/groups">Groups</a></li>
-                                <li><a href="/admin/configs">Configs</a></li>
+                                <%= nav_item('/admin/systems', 'Systems') %>
+                                <%= nav_item('/admin/groups', 'Groups') %>
+                                <%= nav_item('/admin/configs', 'Configs') %>
                             </ul>
                         <% end %>
                     </li>

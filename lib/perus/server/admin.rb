@@ -10,11 +10,12 @@ module Server::Admin
 
         class_eval "
             use Sinatra.new {
+                helpers Server::Helpers
+
                 before do
                     @plural = '#{plural}'
                     @title = '#{title}'
-                    @site_name = Server.options.site_name
-                    @groups = Server::Group.all
+                    load_site_information
                 end
 
                 # list

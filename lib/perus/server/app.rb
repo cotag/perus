@@ -10,6 +10,7 @@ module Server
         # config
         #----------------------
         register Sinatra::Synchrony
+        helpers Server::Helpers
 
         configure do
             set :root, File.join(__dir__)
@@ -20,8 +21,7 @@ module Server
         end
 
         before do
-            @site_name = Server.options.site_name
-            @groups = Server::Group.all
+            load_site_information
         end
 
 
