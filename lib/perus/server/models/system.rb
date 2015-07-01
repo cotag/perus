@@ -55,6 +55,19 @@ class Server::System < Sequel::Model
         Hash[pairs]
     end
 
+    def screenshot_url
+        return '' unless uploads
+
+        # some systems may not have a screenshot
+        entries = JSON.parse(uploads)
+        return '' unless entries['screenshot']
+
+        # construct the public url for the upload
+        prefix = URI(Server.options.uploads_url)
+        path = File.join(id.to_s, entries['screenshot']['filename'])
+        (prefix + path).to_s
+    end
+
     def validate
         super
         validates_presence  :name

@@ -50,7 +50,7 @@ module Server
 
         # list of systems
         get '/systems' do
-            @systems = Server::System.all
+            @systems = Server::System.all.group_by(&:orientation)
             @title = 'All Systems'
             erb :systems
         end

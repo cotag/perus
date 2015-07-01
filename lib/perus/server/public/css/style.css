@@ -172,3 +172,60 @@ main {
                 font-size: 13px;
             }
 
+/* systems list */
+.systems {
+    margin-bottom: 80px;
+}
+
+.systems a {
+    display: inline-block;
+    background-color: white;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    margin-right: 20px;
+    margin-bottom: 20px;
+}
+
+    .systems a .screenshot {
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-color: rgb(255, 200, 200);
+    }
+
+    .systems a h1 {
+        height: 14px;
+        margin-top: 8px;
+        font-size: 14px;
+        font-weight: 300;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .systems a p {
+        font-size: 11px;
+        color: #bbb;
+        margin-top: 3px;
+        font-weight: 300;
+    }
+
+.systems.portrait a {
+    width: 201px;
+    height: 338px;
+}
+
+    .systems.portrait a .screenshot {
+        width: 177px;
+        height: 280px;
+    }
+
+.systems.landscape a {
+    width: 300px;
+    height: 215px;
+}
+
+    .systems.landscape a .screenshot {
+        width: 280px;
+        height: 157px;
+    }

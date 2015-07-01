@@ -1,8 +1,16 @@
 <h1><%= @title %></h1>
 
 <% unless @systems.empty? %>
-    <% @systems.each do |system| %>
-        <a href="/systems/<%= system.id %>"><%= system.display_name %></a></td>
+    <% @systems.each do |(orientation, systems)| %>
+        <div class="<%= orientation %> systems">
+            <% systems.each do |system| %>
+                <a href="/systems/<%= system.id %>">
+                    <div class="screenshot" style="background-image: url(<%= system.screenshot_url %>)"></div>
+                    <h1><%= system.display_name %></h1>
+                    <p><%= system.name %> - <%= system.ip || 'unknown IP' %></p>
+                </a>
+            <% end %>
+        </div>
     <% end %>
 <% else %>
     <p>No Systems</p>
