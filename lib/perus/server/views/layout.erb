@@ -15,16 +15,21 @@
                     </li>
                     <li>
                         <a href="/systems">Systems</a>
-                        <ul style="display: none">
+                        <ul>
+                            <% @groups.each do |group| %>
+                                <li><a href="/groups/<%= group.id %>/systems"><%= group.name %></a></li>
+                            <% end %>
                         </ul>
                     </li>
                     <li>
                         <a href="/admin">Admin</a>
-                        <ul>
-                            <li><a href="/admin/systems">Systems</a></li>
-                            <li><a href="/admin/groups">Groups</a></li>
-                            <li><a href="/admin/configs">Configs</a></li>
-                        </ul>
+                        <% if request.path.start_with?('/admin') %>
+                            <ul>
+                                <li><a href="/admin/systems">Systems</a></li>
+                                <li><a href="/admin/groups">Groups</a></li>
+                                <li><a href="/admin/configs">Configs</a></li>
+                            </ul>
+                        <% end %>
                     </li>
                 </ul>
             </nav>

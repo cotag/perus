@@ -14,6 +14,7 @@ module Server::Admin
                     @plural = '#{plural}'
                     @title = '#{title}'
                     @site_name = Server.options.site_name
+                    @groups = Server::Group.all
                 end
 
                 # list

@@ -99,6 +99,12 @@ main {
                 color: #444;
             }
 
+            main > form > p.errors {
+                padding-left: 100px;
+                color: red;
+                font-size: 13px;
+            }
+
             main > form > p span {
                 display: inline-block;
                 padding-left: 100px;
@@ -120,7 +126,7 @@ main {
             }
 
             main > form > p textarea {
-                min-height: 50px;
+                min-height: 80px;
             }
 
             main > form > p.actions {

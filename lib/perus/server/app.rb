@@ -21,6 +21,7 @@ module Server
 
         before do
             @site_name = Server.options.site_name
+            @groups = Server::Group.all
         end
 
 
@@ -50,6 +51,15 @@ module Server
         # list of systems
         get '/systems' do
             @systems = Server::System.all
+            @title = 'All Systems'
+            erb :systems
+        end
+
+        # list of systems by group
+        get '/groups/:id/systems' do
+            group = Server::Group.with_pk!(params['id'])
+            @systems = group.systems
+            @title = "#{group.name} Systems"
             erb :systems
         end
 
