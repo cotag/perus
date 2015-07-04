@@ -1,7 +1,52 @@
 <h1>System: <%= @system.display_name %></h1>
 
-<img src="<%= @uploads['screenshot'] %>">
+<section id="meta">
+    <img src="<%= @uploads['screenshot'] %>">
+    <dl>
+        <dt>Name:</dt>
+        <dd><%= @system.name %></dd>
+        <dt>Last Updated:</dt>
+        <dd><%= @last_updated %></dd>
+        <dt>IP:</dt>
+        <dd><%= @system.ip %></dd>
+        <% @str_metrics.each do |name, value| %>
+            <dt><%= name %></dt>
+            <dd><%= value %></dd>
+        <% end %>
+        <dt>Links:</dt>
+        <dd><%= @links %></dd>
+    </dl>
+</section>
 
-<% @metrics.each do |(metric, values)| %>
-    <p><%= metric %>: <%= values.first.str_value || values.first.num_value %></p>
+<script src="/js/dygraph-combined.js"></script>
+<% @num_metrics.each do |name, metrics| %>
+    <article class="graph">
+        <h2><%= name.titlecase %></h2>
+        <div id="metric-<%= name %>" style="width:500px; height:300px"></div>
+        <script type="text/javascript">
+            var graph = new Dygraph(
+                document.getElementById("metric-<%= name %>"),
+                "/systems/<%= @system.id %>/values?metrics=<%= metrics.join(',') %>",
+                {
+                    labelsSeparateLines: true
+                }
+            );
+        </script>
+    </article>
+<% end %>
+
+<% if @system.collection_errors.length > 0 %>
+    <section id="errors">
+        <h1>Collection Errors</h1>
+        <% @system.collection_errors.each do |error| %>
+            <article>
+                <h1><%= error.module %> - <%= Time.at(error.timestamp).ctime %></h1>
+                <p><%= error.description.gsub('<', '&lt;').gsub('>', '&gt;') %></p>
+            </article>
+        <% end %>
+        <form action="/systems/<%= @system.id %>/errors" method="POST">
+            <input type="hidden" name="_method" value="DELETE">
+            <input type="submit" value="Clear All Errors">
+        </form>
+    </section>
 <% end %>

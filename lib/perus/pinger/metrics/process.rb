@@ -4,11 +4,16 @@ module Metrics
         option :name
 
         def measure(results)
-            path = options.gsub("/", "\\\\\\/")
+            path = options.process_path.gsub("/", "\\\\\\/")
             cpu, mem = `ps aux | awk '/#{path}/ {cpu += $3; mem += $4} END {print cpu, mem;}'`.split
-            core_count = `cat /proc/cpuinfo | grep processor | awk '{count += 1} END {print count}'`
-            results["#{option.name}_cpu"] = cpu.to_f / core_count.to_i
-            results["#{option.name}_mem"] = mem.to_f
+            if `uname -s`.strip == 'Darwin'
+                core_count = `sysctl -n hw.ncpu`
+            else
+                core_count = `cat /proc/cpuinfo | grep processor | awk '{count += 1} END {print count}'`
+            end
+
+            results["cpu_#{options.name}"] = cpu.to_f / core_count.to_i
+            results["mem_#{options.name}"] = mem.to_f
         end
     end
 end

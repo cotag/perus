@@ -10,6 +10,7 @@ Sequel.migration do
             String  :links, text: true
             String  :ip
             String  :uploads, text: true
+            String  :metrics, text: true
             Integer :last_updated
         end
     end

@@ -1,4 +1,5 @@
 require 'sequel'
+require 'sequel/plugins/serialization'
 
 module Server::DB
     def self.start
@@ -13,5 +14,6 @@ module Server::DB
         require File.join(__dir__, 'models', 'config')
         require File.join(__dir__, 'models', 'value')
         require File.join(__dir__, 'models', 'group')
+        require File.join(__dir__, 'models', 'error')
     end
 end

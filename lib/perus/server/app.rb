@@ -3,6 +3,7 @@ require 'sinatra/synchrony'
 require 'sinatra/reloader'
 require 'sequel'
 require 'json'
+require 'uri'
 
 module Server
     class App < Sinatra::Application
@@ -58,17 +59,71 @@ module Server
         # list of systems by group
         get '/groups/:id/systems' do
             group = Server::Group.with_pk!(params['id'])
-            @systems = group.systems
-            @title = "#{group.name} Systems"
+            @systems = group.systems.group_by(&:orientation)
+            @title = group.name
             erb :systems
         end
 
         # info page for a system
         get '/systems/:id' do
             @system  = Server::System.with_pk!(params['id'])
-            @metrics = @system.values.group_by(&:metric)
             @uploads = @system.upload_urls
+
+            # we're only interested in the latest value for string metrics
+            @str_metrics = {}
+            str_metrics = @system.metrics['str'] || []
+            dataset = @system.values_dataset
+            str_metrics.each do |name|
+                value = dataset.where(metric: name).order_by('timestamp desc').first
+                name = "#{name.titlecase}:"
+                @str_metrics[name] = value ? value.str_value : ''
+            end
+
+            # numeric values are grouped together by their first name component
+            # and drawn on a graph. e.g cpu_all and cpu_chrome are shown together
+            num_metrics = @system.metrics['num'] || []
+            @num_metrics = num_metrics.group_by {|n| n.split('_')[0]}
+
+            # make links clickable
+            @links = @system.links.gsub("\n", "<br>")
+            URI::extract(@links).each {|uri| @links.gsub!(uri, %Q{<a href="#{uri}">#{uri}</a>})}
+
+            # last updated is a timestamp, conver
+            @last_updated = Time.at(@system.last_updated).ctime
             erb :system
+        end
+
+        get '/systems/:id/values' do
+            system  = Server::System.with_pk!(params['id'])
+            metrics = params[:metrics].to_s.split(',')
+
+            # find all values for the requested metrics
+            dataset = system.values_dataset.where(metric: metrics)
+
+            # the graphing library requires multiple series to be provided in
+            # row format (date, series 1, series 2 etc) so each value is
+            # grouped into a timestamp update window
+            updates = dataset.all.group_by(&:timestamp)
+
+            # loop from start to end generating the response csv
+            timestamps = updates.keys.sort
+            csv = "Date,#{params['metrics']}\n"
+
+            timestamps.each do |timestamp|
+                date = Time.at(timestamp).strftime('%Y-%m-%d %H:%M:%S')
+                csv << date << ','
+                
+                values = Array.new(metrics.length)
+                records = updates[timestamp]
+
+                records.each do |record|
+                    values[metrics.index(record.metric)] = record.num_value
+                end
+
+                csv << values.join(',') << "\n"
+            end
+
+            csv
         end
 
         # receive data from a system
@@ -82,35 +137,32 @@ module Server
             system.last_updated = timestamp
             system.ip = request.ip
 
+            # errors is either nil or a hash of the format - module: [err, ...]
+            errors = values.delete('errors')
+            if errors
+                errors.each do |name, module_errors|
+                    module_errors.each do |error|
+                        Server::Error.create(
+                            system_id: system.id,
+                            timestamp: timestamp,
+                            module: name,
+                            description: error
+                        )
+                    end
+                end
+            end
+
             # the system object stores files on disk and updates an 'uploads'
             # field with a list of filenames and mimetypes
             uploads = values.delete('uploads')
             system.save_uploads(uploads, params) if uploads
 
-            # ip, last updated and uploads are the only fields modified on the
-            # system during a ping so we can save changes now
-            system.save
-            
-            # TODO: handle errors
-            values.delete('errors')
-
             # add each new value, a later process cleans up old values
-            values.each do |(name, value)|
-                attrs = {
-                    system_id: system.id,
-                    timestamp: timestamp,
-                    metric: name
-                }
+            system.save_values(values, timestamp)
 
-                if value.kind_of?(Numeric)
-                    attrs[:num_value] = value
-                else
-                    attrs[:str_value] = value
-                end
-
-                Value.create(attrs)
-            end
-
+            # ip, last updated, uploads and metrics are now updated. these are
+            # stored on the system.
+            system.save
             content_type :json
             {success: true}.to_json
         end
@@ -120,6 +172,13 @@ module Server
             system = Server::System.with_pk!(params['id'])
             content_type :json
             system.config.config
+        end
+
+        # clear collection errors
+        delete '/systems/:id/errors' do
+            system = Server::System.with_pk!(params['id'])
+            system.collection_errors.each(&:delete)
+            redirect "/systems/#{system.id}"
         end
 
         # helper to make uploads publicly accessible
