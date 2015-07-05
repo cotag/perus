@@ -1,1 +1,15 @@
-Index! <%= @form %>
+<h1>System Overview</h1>
+<% @alerts.each do |alert, systems| %>
+    <div class="alert">
+        <h1 class="<%= alert.severity %>"><%= alert.name %></h1>
+        <% if systems.empty? %>
+            <p>All systems functioning normally</p>
+        <% else %>
+            <ul>
+                <% systems.each do |system| %>
+                    <li><a href="/systems/<%= system.id %>"><%= system.display_name %></a></li>
+                <% end %>
+            </ul>
+        <% end %>
+    </div>
+<% end %> 

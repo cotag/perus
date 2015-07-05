@@ -34,6 +34,7 @@ module Server
         admin :system
         admin :config
         admin :group
+        admin :alert
 
         # static admin index page
         get '/admin' do
@@ -46,6 +47,9 @@ module Server
         #----------------------
         # overview
         get '/' do
+            systems = Server::System.all
+            alerts = Server::Alert.all
+            @alerts = Hash[alerts.zip(alerts.collect {|alert| alert.execute(systems)})]
             erb :index
         end
 
@@ -74,7 +78,7 @@ module Server
             str_metrics = @system.metrics['str'] || []
             dataset = @system.values_dataset
             str_metrics.each do |name|
-                value = dataset.where(metric: name).order_by('timestamp desc').first
+                value = @system.latest(name)
                 name = "#{name.titlecase}:"
                 @str_metrics[name] = value ? value.str_value : ''
             end

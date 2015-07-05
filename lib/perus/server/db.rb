@@ -15,5 +15,6 @@ module Server::DB
         require File.join(__dir__, 'models', 'value')
         require File.join(__dir__, 'models', 'group')
         require File.join(__dir__, 'models', 'error')
+        require File.join(__dir__, 'models', 'alert')
     end
 end

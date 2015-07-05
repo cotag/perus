@@ -52,6 +52,10 @@ class Server::System < Sequel::Model
         metrics['str'].uniq!
     end
 
+    def latest(name)
+        values_dataset.where(metric: name).order_by('timestamp desc').first
+    end
+
 
     # ---------------------------------------
     # uploads

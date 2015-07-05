@@ -308,3 +308,47 @@ article.graph {
         text-align: right;
         margin-top: 10px;
     }
+
+/* alerts */
+.alert {
+    margin-bottom: 30px;
+}
+
+    .alert h1 {
+        margin-bottom: 15px;
+        padding-left: 24px;
+        position: relative;
+    }
+
+    .alert h1::before {
+        position: absolute;
+        left: 0px;
+        top: 1px;
+        content: ' ';
+        width: 15px;
+        height: 15px;
+        border-radius: 15px;
+    }
+
+    .alert h1.warning::before {
+        background-color: yellow;
+    }
+
+    .alert h1.error::before {
+        background-color: red;
+    }
+
+    .alert h1.notice::before {
+        background-color: blue;
+    }
+
+    .alert ul {
+        list-style-type: none;
+        padding: 0px;
+        font-size: 14px;
+    }
+
+    .alert p {
+        font-size: 13px;
+        color: #999;
+    }
