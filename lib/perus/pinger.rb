@@ -1,7 +1,8 @@
 require './options'
 
 module Pinger
-    # metrics
+    # metrics / commands
+    require './pinger/command'
     require './pinger/metric'
     require './pinger/metrics/chrome'
     require './pinger/metrics/cpu'

@@ -1,7 +1,7 @@
 <h1>System Overview</h1>
 <% @alerts.each do |alert, systems| %>
-    <div class="alert">
-        <h1 class="<%= alert.severity %>"><%= alert.name %></h1>
+    <div class="alert <%= alert.severity %>">
+        <h1><%= alert.name %></h1>
         <% if systems.empty? %>
             <p>All systems functioning normally</p>
         <% else %>

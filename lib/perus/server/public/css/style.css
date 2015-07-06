@@ -316,30 +316,6 @@ article.graph {
 
     .alert h1 {
         margin-bottom: 15px;
-        padding-left: 24px;
-        position: relative;
-    }
-
-    .alert h1::before {
-        position: absolute;
-        left: 0px;
-        top: 1px;
-        content: ' ';
-        width: 15px;
-        height: 15px;
-        border-radius: 15px;
-    }
-
-    .alert h1.warning::before {
-        background-color: yellow;
-    }
-
-    .alert h1.error::before {
-        background-color: red;
-    }
-
-    .alert h1.notice::before {
-        background-color: blue;
     }
 
     .alert ul {
@@ -347,6 +323,33 @@ article.graph {
         padding: 0px;
         font-size: 14px;
     }
+
+        .alert ul li {
+            padding-left: 24px;
+            position: relative;
+        }
+
+        .alert ul li::before {
+            position: absolute;
+            left: 0px;
+            top: 1px;
+            content: ' ';
+            width: 15px;
+            height: 15px;
+            border-radius: 15px;
+        }
+
+        .alert.warning ul li::before {
+            background-color: yellow;
+        }
+
+        .alert.error ul li::before {
+            background-color: red;
+        }
+
+        .alert.notice ul li::before {
+            background-color: blue;
+        }
 
     .alert p {
         font-size: 13px;

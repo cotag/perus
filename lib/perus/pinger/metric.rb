@@ -1,29 +1,12 @@
-require 'ostruct'
-
 module Metrics
-    class Metric
-        attr_reader :options
-
-        def self.option(name, default = nil)
-            @defaults ||= {}
-            @defaults[name] = default
-        end
-
-        def self.defaults
-            @defaults || {}
-        end
-
-        def initialize(options)
-            defaults = self.class.defaults
-            @options = OpenStruct.new(defaults.merge(options))
-        end
-
+    # commands and metrics are essentially the same thing - they take a set of
+    # parameters and run a command on a client system. metrics return results
+    # in a formatted way to the server, commands can return results, or may
+    # simply inform the server that they were run. metrics are also intended to
+    # run every ping, while commands are run once.
+    class Metric < Pinger::Command
         def measure(results)
             # results[:name] = value
-        end
-
-        def cleanup
-            # remove temporary files etc.
         end
     end
 

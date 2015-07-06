@@ -22,7 +22,7 @@
 <% @num_metrics.each do |name, metrics| %>
     <article class="graph">
         <h2><%= name.titlecase %></h2>
-        <div id="metric-<%= name %>" style="width:500px; height:300px"></div>
+        <div id="metric-<%= name %>" style="width: 450px; height: 300px"></div>
         <script type="text/javascript">
             var graph = new Dygraph(
                 document.getElementById("metric-<%= name %>"),
