@@ -27,14 +27,11 @@ module Perus
         require './pinger/metrics/uptime'
 
         # pinger
-        require './pinger/instance'
         require './pinger/pinger'
 
-        # options
-        def self.options
-            @options ||= Perus::Options.new
-        end
+        # options file
+        DEFAULT_OPTIONS_PATH = '/etc/perus-pinger'
     end
 
-    Pinger::Instance.run if __FILE__ == $0
+    Pinger::Pinger.new.run if __FILE__ == $0
 end

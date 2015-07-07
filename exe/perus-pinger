@@ -1,4 +1,23 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
 require 'perus/pinger'
+require 'optparse'
 
-Pinger::Instance.run
+options_path = Perus::Pinger::DEFAULT_OPTIONS_PATH
+
+ARGV.options do |opts|
+    opts.banner = "Usage: perus-pinger [options]"
+
+    opts.on('-c', '--config', String, "Path to config file (default: #{Perus::Pinger::DEFAULT_OPTIONS_PATH})") do |c|
+        options_path = c
+    end
+
+    opts.on('-h', '--help', 'Prints this help') do
+        puts opts
+        exit
+    end
+
+    opts.parse!
+end
+
+pinger = Perus::Pinger::Pinger.new(options_path)
+pinger.run
