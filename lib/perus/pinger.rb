@@ -3,6 +3,16 @@ require './options'
 module Pinger
     # metrics / commands
     require './pinger/command'
+    require './pinger/chrome_command'
+    require './pinger/commands/chrome_execute'
+    require './pinger/commands/chrome_navigate'
+    require './pinger/commands/chrome_reload'
+    require './pinger/commands/kill_process'
+    require './pinger/commands/remove_path'
+    require './pinger/commands/replace'
+    require './pinger/commands/restart'
+    require './pinger/commands/upload'
+
     require './pinger/metric'
     require './pinger/metrics/chrome'
     require './pinger/metrics/cpu'

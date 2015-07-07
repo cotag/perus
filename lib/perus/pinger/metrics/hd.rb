@@ -1,6 +1,7 @@
 module Metrics
     class HD < Metric
-        option :drive, '/dev/sda1'
+        description 'Measures percentage of disk space used on the specified drive'
+        option :drive
         
         def measure(results)
             regex = "/^#{options.drive.gsub("/", "\\/")}/"

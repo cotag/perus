@@ -1,6 +1,9 @@
 module Metrics
     class Process < Metric
-        option :process_path
+        description 'Measures percentage of RAM and CPU used by the process specified by "process_path".
+                     The results are returned to the server under 2 metrics called "cpu_{name}" and
+                     "mem_{name}". Valid values for "process_path" are contained in the pinger config file.'
+        option :process_path, restricted: true
         option :name
 
         def measure(results)

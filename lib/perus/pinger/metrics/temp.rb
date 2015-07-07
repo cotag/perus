@@ -1,6 +1,7 @@
 module Metrics
     class Temp < Metric
-        option :device, 'Physical id 0'
+        description 'Measures the temperature of "device" on the client. By default, this will be a CPU.'
+        option :device, default: 'Physical id 0'
         
         def measure(results)
             if `uname -s`.strip == 'Darwin'

@@ -1,7 +1,10 @@
 module Metrics
     class Screenshot < UploadMetric
-        option :path, '/tmp/screenshot.jpg'
-        option :resize, '20%'
+        description 'Takes a screenshot of the primary screen on the client and uploads it. The screenshot
+                     is saved to "path" before being uploaded. Valid values for "path" are contained in the
+                     pinger config file.'
+        option :path, default: '/tmp/screenshot.jpg', restricted: true
+        option :resize, default: '20%'
 
         def attach(uploads)
             if `uname -s`.strip == 'Darwin'
