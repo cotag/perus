@@ -25,7 +25,7 @@ module Perus::Pinger
     end
 
     class Command
-        attr_reader :options
+        attr_reader :options, :id
 
         # set or get command/metric description
         def self.description(text = nil)
@@ -47,7 +47,11 @@ module Perus::Pinger
         end
 
         def self.options
-            @options || []
+            @options ||= []
+        end
+
+        def self.inherited(subclass)
+            subclass.options.concat(self.options)
         end
 
         # command classes which are intended to run as metrics call this method
@@ -68,6 +72,10 @@ module Perus::Pinger
             self.class.options.each do |option|
                 option.process(@options, option_values)
             end
+
+            # commands (not metrics) have ids that uniquely identify a command
+            # instance and its response
+            @id = option_values['id']
         end
 
         def run

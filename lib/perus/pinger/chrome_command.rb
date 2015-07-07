@@ -44,7 +44,7 @@ module Perus::Pinger
                 end
 
                 # cutoff console message loading after N seconds
-                EM.add_timer(option.timeout_seconds) do
+                EM.add_timer(options.timeout_seconds) do
                     @ws.close
                 end
             end

@@ -1,3 +1,4 @@
+require 'securerandom'
 require 'rest-client'
 require 'ostruct'
 require 'json'
@@ -24,54 +25,136 @@ module Perus::Pinger
 
             @config_url = (server_uri + config_path).to_s
             @pinger_url = (server_uri + pinger_path).to_s
+
+            @metrics = []
+            @metric_results = {}
+            @metric_errors = {}
+
+            @commands = []
+            @command_results = {}
+            @late_commands = []
         end
 
         def run
             load_config
-            ping
+            run_metrics
+            run_commands
+            send_response
+            cleanup
         end
 
+        #----------------------
+        # configuration
+        #----------------------
         def load_config
             # load the system config by requesting it from the perus server
             json = JSON.parse(RestClient.get(@config_url))
+            json['metrics'] ||= []
+            json['commands'] ||= []
 
-            # load metric modules based on the config
-            @metrics = json['metrics'].collect do |options|
-                metric = Metrics.const_get(options['type'])
-                metric.new(options['params'])
-            end
-        end
-
-        def ping
-            results = {}
-            payload = {}
-
-            @metrics.each do |metric|
+            # load metric and command modules based on the config
+            json['metrics'].each do |config|
                 begin
-                    metric.measure(results)
+                    metric = ::Perus::Pinger.const_get(config['type'])
+                    @metric_errors[metric.name] ||= []
+                    @metrics << metric.new(config['options'])
                 rescue Exception => e
-                    results[:errors] ||= {}
-                    results[:errors][metric.class.name] ||= []
-                    results[:errors][metric.class.name] << e.to_s
+                    if e.is_a?(NameError)
+                        @metric_errors[config['type']] = e.inspect
+                    else
+                        @metric_errors[metric.name] << e.inspect
+                    end
                 end
             end
 
-            # uploads are sent separately to other results. replace the hash of
-            # files with a list of keys so the server can store each file to disk
-            if results.include?(:uploads)
-                uploads = results.delete(:uploads)
-                results[:uploads] = uploads.keys
-                payload.merge!(uploads)
+            json['commands'].each do |config|
+                begin
+                    command = ::Perus::Pinger.const_get(config['type'])
+                    @commands << command.new(config['options'])
+                rescue Exception => e
+                    if config['options']['id']
+                        @command_results[config['options']['id']] = e.inspect
+                    end
+                end
+            end
+        end
+
+        #----------------------
+        # run
+        #----------------------
+        def run_metrics
+            @metrics.each do |metric|
+                begin
+                    result = metric.run
+                    @metric_results.merge!(result)
+                rescue Exception => e
+                    @metric_errors[metric.class.name] << e.inspect
+                end
+            end
+        end
+
+        def run_commands
+            @commands.each do |command|
+                begin
+                    result = command.run
+
+                    if result.instance_of?(Proc)
+                        @late_commands << result
+                        result = true
+                    end
+
+                    @command_results[command.id] = result
+
+                rescue Exception => e
+                    @command_results[command.id] = e.inspect
+                end
+            end
+        end
+
+        #----------------------
+        # response
+        #----------------------
+        def add_to_payload(payload, field, results)
+            results.each do |name, val|
+                next unless val.instance_of?(File)
+                uuid = SecureRandom.uuid
+                results[name] = {file: uuid}
+                payload[uuid] = val
             end
 
-            # send results to the perus server
+            payload[field] = JSON.dump(results)
+        end
+
+        def send_response
+            # prepare the response and replace file results with a reference
+            # to the uploaded file. files are sent as top level parameters in
+            # the payload, while metric and command results are sent as a json
+            # object with a reference to these files.
+            payload = {}
+            add_to_payload(payload, 'metrics', @metric_results)
+            add_to_payload(payload, 'commands', @command_results)
+
+            # metric_errors is created with a key for each metric type. most
+            # metrics should run without any errors, so remove these entries
+            # before adding errors to the payload.
+            @metric_errors.reject! {|metric, errors| errors.empty?}
+            add_to_payload(payload, 'metric_errors', @metric_errors)
+
             begin
-                payload[:values] = JSON.dump(results)
                 RestClient.post(@pinger_url, payload)
-            ensure
-                # cleanup temporary files etc.
-                @metrics.each(&:cleanup)
+            rescue Exception => e
+                puts 'Ping failed with exception'
+                puts e.inspect
             end
+        end
+
+        #----------------------
+        # cleanup
+        #----------------------
+        def cleanup
+            @metrics.each(&:cleanup)
+            @commands.each(&:cleanup)
+            @late_commands.each(&:call)
         end
     end
 end
