@@ -1,10 +1,12 @@
-module Metrics
-    class Chrome < Commands::ChromeCommand
-        description 'Connects to Chrome with the remote debugger and counts the number of warnings and
-                     errors currently in the console of the top Chrome window. The URL of the page is
-                     also captured and can be compared to an expected string in an alert.'
+module Perus::Pinger
+    class Chrome < ChromeCommand
+        description 'Connects to Chrome with the remote debugger and counts the
+                     number of warnings and errors currently in the console of
+                     the top Chrome window. The URL of the page is also sent
+                     and can be compared to an expected string in an alert.'
+        metric!
                      
-        def measure(results)
+        def run
             # we use a debugging protocol connection to read the console messages
             # in the top level window to count the number of warnings and errors
             warning_count = 0
@@ -21,9 +23,11 @@ module Metrics
                 end
             end
 
-            results[:chrome_warnings] = warning_count
-            results[:chrome_errors] = error_count
-            results[:chrome_url] = @page['url']
+            {
+                chrome_warnings: warning_count,
+                chrome_errors: error_count,
+                chrome_url: @page['url']
+            }
         end
     end
 end

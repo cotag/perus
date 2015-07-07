@@ -3,7 +3,7 @@ require 'ostruct'
 require 'json'
 require 'uri'
 
-class Pinger::Pinger
+class Perus::Pinger::Pinger
     def initialize
         # cache urls on initialisation since the urls depend on values known
         # at startup and that won't change over the object lifetime

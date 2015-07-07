@@ -1,8 +1,8 @@
-module Commands
-    class Restart < Pinger::Command
+module Perus::Pinger
+    class Restart < Command
         description 'Restarts the client computer'
 
-        def perform
+        def run
             -> { `sudo reboot` }
         end
     end

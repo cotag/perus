@@ -3,8 +3,8 @@ require 'eventmachine'
 require 'rest-client'
 require 'json'
 
-module Commands
-    class ChromeCommand < Pinger::Command
+module Perus::Pinger
+    class ChromeCommand < Command
         option :timeout_seconds, default: 2
         option :host, default: 'localhost'
         option :port, default: 9222

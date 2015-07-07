@@ -1,9 +1,10 @@
-module Metrics
-    class Uptime < Metric
+module Perus::Pinger
+    class Uptime < Command
         description 'Runs the uptime command and returns the result'
+        metric!
         
-        def measure(results)
-            results[:uptime] = `uptime`.strip
+        def run
+            {uptime: `uptime`.strip}
         end
     end
 end
