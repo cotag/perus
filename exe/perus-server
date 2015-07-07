@@ -1,4 +1,23 @@
 #!/usr/bin/env ruby
 require 'perus/server'
+require 'optparse'
 
-Server::Instance.run
+options_path = Perus::Server::DEFAULT_OPTIONS_PATH
+
+ARGV.options do |opts|
+    opts.banner = "Usage: perus-server [options]"
+
+    opts.on('-c', '--config', String, "Path to config file (default: #{Perus::Server::DEFAULT_OPTIONS_PATH})") do |c|
+        options_path = c
+    end
+
+    opts.on('-h', '--help', 'Prints this help') do
+        puts opts
+        exit
+    end
+
+    opts.parse!
+end
+
+server = Perus::Server::Server.new(options_path)
+server.run

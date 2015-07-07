@@ -5,13 +5,13 @@ require 'sequel'
 require 'json'
 require 'uri'
 
-module Server
+module Perus::Server
     class App < Sinatra::Application
         #----------------------
         # config
         #----------------------
         register Sinatra::Synchrony
-        helpers Server::Helpers
+        helpers Helpers
 
         configure do
             set :root, File.join(__dir__)
@@ -29,7 +29,7 @@ module Server
         #----------------------
         # admin pages
         #----------------------
-        extend Server::Admin
+        extend Admin
 
         admin :system
         admin :config
@@ -47,22 +47,22 @@ module Server
         #----------------------
         # overview
         get '/' do
-            systems = Server::System.all
-            alerts = Server::Alert.all
+            systems = System.all
+            alerts = Alert.all
             @alerts = Hash[alerts.zip(alerts.collect {|alert| alert.execute(systems)})]
             erb :index
         end
 
         # list of systems
         get '/systems' do
-            @systems = Server::System.all.group_by(&:orientation)
+            @systems = System.all.group_by(&:orientation)
             @title = 'All Systems'
             erb :systems
         end
 
         # list of systems by group
         get '/groups/:id/systems' do
-            group = Server::Group.with_pk!(params['id'])
+            group = Group.with_pk!(params['id'])
             @systems = group.systems.group_by(&:orientation)
             @title = group.name
             erb :systems
@@ -70,7 +70,7 @@ module Server
 
         # info page for a system
         get '/systems/:id' do
-            @system  = Server::System.with_pk!(params['id'])
+            @system  = System.with_pk!(params['id'])
             @uploads = @system.upload_urls
 
             # we're only interested in the latest value for string metrics
@@ -98,7 +98,7 @@ module Server
         end
 
         get '/systems/:id/values' do
-            system  = Server::System.with_pk!(params['id'])
+            system  = System.with_pk!(params['id'])
             metrics = params[:metrics].to_s.split(',')
 
             # find all values for the requested metrics
@@ -137,7 +137,7 @@ module Server
             timestamp = Time.now.to_i
 
             # update the system with its last known ip and update time
-            system = Server::System.with_pk!(params['id'])
+            system = System.with_pk!(params['id'])
             system.last_updated = timestamp
             system.ip = request.ip
 
@@ -146,7 +146,7 @@ module Server
             if errors
                 errors.each do |name, module_errors|
                     module_errors.each do |error|
-                        Server::Error.create(
+                        Error.create(
                             system_id: system.id,
                             timestamp: timestamp,
                             module: name,
@@ -173,14 +173,14 @@ module Server
 
         # system config
         get '/systems/:id/config' do
-            system = Server::System.with_pk!(params['id'])
+            system = System.with_pk!(params['id'])
             content_type :json
             system.config.config
         end
 
         # clear collection errors
         delete '/systems/:id/errors' do
-            system = Server::System.with_pk!(params['id'])
+            system = System.with_pk!(params['id'])
             system.collection_errors.each(&:delete)
             redirect "/systems/#{system.id}"
         end
