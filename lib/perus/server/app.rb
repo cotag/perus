@@ -130,22 +130,23 @@ module Perus::Server
         post '/systems/:id/actions' do
             action = Action.new
             action.system_id = params['id']
-            action.command = params['command']
 
-            if params['options']
-                action.options = params['options'].reject do |attr, value|
-                    value.empty?
-                end
+            if params['script_id']
+                action.script_id = params['script_id']
             else
-                action.options = {}
+                command_config = CommandConfig.create_with_params(params)
+                action.command_config_id = command_config.id
             end
 
             begin
                 action.save
             rescue
+                if action.command_config_id
+                    CommandConfig.with_pk!(action.command_config_id).destroy
+                end
             end
 
-            redirect "/systems/#{params['id']}"
+            redirect "/systems/#{params['id']}#actions"
         end
 
         # delete an action. deletion also clears any uploaded files.

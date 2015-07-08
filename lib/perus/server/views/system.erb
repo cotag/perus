@@ -65,6 +65,14 @@
 <% @commands.each do |command| %>
     <%= erb :command_config, locals: {command: command, action: "/systems/#{@system.id}/actions"} %>
 <% end %>
+<% @scripts.each do |script| %>
+    <form class="command" data-command="<%= script.code_name %>" style="display: none" method="POST" action="/systems/<%= @system.id %>/actions">
+        <h1><%= script.name %></h1>
+        <p><%= script.description %></p>
+        <input type="hidden" name="script_id" value="<%= script.id %>">
+        <p class="actions"><input type="submit" value="Add"></p>
+    </form>
+<% end %>
 
 <!-- existing actions -->
 <section id="actions">
@@ -79,7 +87,7 @@
             </tr>
             <% @system.actions.each do |action| %>
                 <tr>
-                    <td><%= action.command %></td>
+                    <td><%= action.command_name %></td>
                     <td><%= action.options %></td>
                     <td><%= action.timestamp || 'PENDING' %></td>
                     <td>
