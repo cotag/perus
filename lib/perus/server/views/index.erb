@@ -4,6 +4,8 @@
         <h1><%= alert.name %></h1>
         <% if systems.empty? %>
             <p>All systems functioning normally</p>
+        <% elsif systems.is_a?(String) %>
+            <p><%= systems.gsub('<', '&lt;').gsub('>', '&gt;') %></p>
         <% else %>
             <ul>
                 <% systems.each do |system| %>

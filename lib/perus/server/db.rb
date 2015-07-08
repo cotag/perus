@@ -19,6 +19,7 @@ module Perus::Server
             require File.join(__dir__, 'models', 'error')
             require File.join(__dir__, 'models', 'alert')
             require File.join(__dir__, 'models', 'action')
+            require File.join(__dir__, 'models', 'metric')
         end
     end
 end

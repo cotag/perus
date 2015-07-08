@@ -1,7 +1,10 @@
 module Perus::Server
     class Config < Sequel::Model
         plugin :validation_helpers
+        plugin :serialization
+        
         one_to_many :systems
+        serialize_attributes :json, :config
 
         def validate
             super

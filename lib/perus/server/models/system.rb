@@ -1,18 +1,16 @@
 require 'fileutils'
 require 'json'
-require 'uri'
 
 module Perus::Server
     class System < Sequel::Model
         plugin :validation_helpers
-        plugin :serialization
 
         many_to_one :config
         many_to_one :group
+        one_to_many :metrics
         one_to_many :values
+        one_to_many :actions
         one_to_many :collection_errors, class_name: 'Perus::Server::Error'
-
-        serialize_attributes :json, :metrics
 
         def validate
             super
@@ -24,46 +22,6 @@ module Perus::Server
         # ---------------------------------------
         # metrics
         # ---------------------------------------
-        def save_values(params, timestamp)
-            # store the set of known metrics for this system. metrics have either
-            # str or num values.
-            values = JSON.parse(params['metrics'])
-            self.metrics ||= {'str' => [], 'num' => [], 'files' => {}}
-
-            values.each do |(metric_name, value)|
-                attrs = {
-                    system_id: id,
-                    timestamp: timestamp,
-                    metric: metric_name
-                }
-
-                # file uploads are treated specially and don't need a value
-                # record created for them
-                if value.kind_of?(Hash)
-                    metrics['files'] << metric_name
-                    save_file(params, value, metric_name)
-                    next
-                elsif value.kind_of?(Numeric)
-                    attrs[:num_value] = value
-                    metrics['num'] << metric_name
-                else
-                    attrs[:str_value] = value
-                    metrics['str'] << metric_name.to_s
-                end
-
-                Value.create(attrs)
-            end
-
-            # on existing systems, adding values above will duplicate metric names
-            metrics['num'].uniq!
-            metrics['str'].uniq!
-            metrics['files'].uniq!
-        end
-
-        def latest(name)
-            values_dataset.where(metric: name).order_by('timestamp desc').first
-        end
-
         def save_metric_errors(params, timestamp)
             errors = JSON.parse(params['metric_errors'])
 
@@ -79,6 +37,46 @@ module Perus::Server
             end
         end
 
+        def save_values(params, timestamp)
+            # store the set of known metrics for this system. metrics have either
+            # str or num values.
+            values = JSON.parse(params['metrics'])
+
+            values.each do |(metric_name, value)|
+                # file uploads are treated specially and don't need a value
+                # record created for them
+                if value.kind_of?(Hash)
+                    file_data = save_file(params, value, metric_name)
+                    Metric.add_file(metric_name, id, file_data)
+                    next
+                end
+
+                attrs = {
+                    system_id: id,
+                    timestamp: timestamp,
+                    metric: metric_name
+                }
+
+                if value.kind_of?(Numeric)
+                    attrs[:num_value] = value
+                    Metric.add_numeric(metric_name, id)
+                else
+                    attrs[:str_value] = value
+                    Metric.add_string(metric_name, id)
+                end
+
+                Value.create(attrs)
+            end
+        end
+
+        def latest(name)
+            values_dataset.where(metric: name).order_by('timestamp desc').first
+        end
+
+
+        # ---------------------------------------
+        # actions
+        # ---------------------------------------
         def save_actions(params, timestamp)
             actions = JSON.parse(params['actions'])
 
@@ -122,23 +120,20 @@ module Perus::Server
             upload = params[entry['file']]
 
             # store the file
+            name = name.to_s + File.extname(upload[:filename])
             File.open(File.join(uploads_dir, name.to_s), 'wb') do |f|
                 f.write(upload[:tempfile].read)
             end
 
             # return details of the file so it can be served with the correct
             # original filename and mimetype
-            {filename: upload[:filename], mimetype: upload[:type]}
+            {filename: name, original_name: upload[:filename], mimetype: upload[:type]}
         end
 
         def upload_urls
-            return {} unless uploads
-            prefix  = URI(Server.options.uploads_url)
-
-            # map each upload file to its public url
-            pairs = uploads.collect do |(name, upload)|
-                path = File.join(id.to_s, upload['filename'])
-                [name, (prefix + path).to_s]
+            file_metrics = metrics_dataset.where(type: 'file').all
+            pairs = file_metrics.collect do |metric|
+                [metric.name, metric.url]
             end
 
             # convert to name => url hash
@@ -146,15 +141,8 @@ module Perus::Server
         end
 
         def screenshot_url
-            return '' unless uploads
-
-            # some systems may not have a screenshot
-            return '' unless uploads['screenshot']
-
-            # construct the public url for the upload
-            prefix = URI(Server.options.uploads_url)
-            path = File.join(id.to_s, uploads['screenshot']['filename'])
-            (prefix + path).to_s
+            screenshot = metrics_dataset.where(name: 'screenshot').first
+            screenshot ? screenshot.url : ''
         end
     end
 end

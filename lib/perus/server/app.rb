@@ -80,20 +80,19 @@ module Perus::Server
         get '/systems/:id' do
             @system  = System.with_pk!(params['id'])
             @uploads = @system.upload_urls
+            metrics = @system.metrics
 
             # we're only interested in the latest value for string metrics
             @str_metrics = {}
-            str_metrics = @system.metrics['str'] || []
-            dataset = @system.values_dataset
-            str_metrics.each do |name|
-                value = @system.latest(name)
-                name = "#{name.titlecase}:"
+            metrics.select(&:string?).each do |metric|
+                value = @system.latest(metric.name)
+                name = "#{metric.name.titlecase}:"
                 @str_metrics[name] = value ? value.str_value : ''
             end
 
             # numeric values are grouped together by their first name component
             # and drawn on a graph. e.g cpu_all and cpu_chrome are shown together
-            num_metrics = @system.metrics['num'] || []
+            num_metrics = metrics.select(&:numeric?).map(&:name)
             @num_metrics = num_metrics.group_by {|n| n.split('_')[0]}
 
             # make links clickable
@@ -101,7 +100,12 @@ module Perus::Server
             URI::extract(@links).each {|uri| @links.gsub!(uri, %Q{<a href="#{uri}">#{uri}</a>})}
 
             # last updated is a timestamp, conver
-            @last_updated = Time.at(@system.last_updated).ctime
+            if @system.last_updated
+                @last_updated = Time.at(@system.last_updated).ctime
+            else
+                @last_updated = 'never updated'
+            end
+
             erb :system
         end
 
@@ -166,8 +170,11 @@ module Perus::Server
         # system config
         get '/systems/:id/config' do
             system = System.with_pk!(params['id'])
+            config = system.config.config
+            actions = system.actions_dataset.where(timestamp: nil).all
+            config['actions'] = actions.map(&:config_hash)
             content_type :json
-            system.config.config
+            config.to_json
         end
 
         # clear collection errors
