@@ -1,4 +1,9 @@
 <h2 class="edit">Metrics</h2>
+
+<% @record.config_metrics.each do |config_metric| %>
+    <%= erb :command_config, locals: {command: config_metric.command_config.command_class, action: "/admin/configs/#{@record.id}/metrics/#{config_metric.id}", command_options: config_metric.command_config.options} %>
+<% end %>
+
 <p id="add-command">
     Add metric:
     <select id="metric-select">
@@ -16,7 +21,7 @@
 <script src="/js/jquery.js"></script>
 <script>
     $('#metric-select').change(function() {
-        $('form.command').hide();
-        $('form[data-command="' + $(this).val() + '"]').show();
+        $('form.command.new').hide();
+        $('form.command.new[data-command="' + $(this).val() + '"]').show();
     });
 </script>

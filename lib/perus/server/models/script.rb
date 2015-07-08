@@ -24,5 +24,10 @@ module Perus::Server
             validates_presence  :name
             validates_unique    :name
         end
+
+        def after_destroy
+            super
+            script_commands.each(&:destroy)
+        end
     end
 end

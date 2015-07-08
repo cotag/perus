@@ -1,6 +1,6 @@
 module Perus::Server
     module Admin
-        def admin(type)
+        def admin(type, redirect_to_record = false)
             plural   = type.to_s.pluralize
             singular = plural.singularize
             title    = singular.titleize
@@ -35,7 +35,11 @@ module Perus::Server
                         if @record.valid?
                             begin
                                 @record.save
-                                redirect '/admin/#{plural}'
+                                if #{redirect_to_record}
+                                    redirect '/admin/#{plural}/' + @record.id.to_s
+                                else
+                                    redirect '/admin/#{plural}'
+                                end
                             rescue
                             end
                         end

@@ -1,4 +1,4 @@
-<form class="command" data-command="<%= command.name %>" style="display: none" method="POST" action="<%= action %>">
+<form class="command <% unless defined?(command_options)%>new<% end %>" data-command="<%= command.name %>" style="<% unless defined?(command_options) %>display: none<% end %>" method="POST" action="<%= action %>">
     <h1><%= command.human_name %></h1>
     <p><%= command.description %></p>
     <input type="hidden" name="command" value="<%= command.name.demodulize %>">
@@ -10,15 +10,28 @@
                 <span>
                     <% if option.boolean? %>
                         <select name="options[<%= option.name %>]">
-                            <option <%= 'selected' if option.default %>>true</option>
-                            <option <%= 'selected' if !option.default%>>false</option>
+                            <% if defined?(command_options) %>
+                                <option <%= 'selected' if command_options[option.name.to_s] %>>true</option>
+                                <option <%= 'selected' if !command_options[option.name.to_s] %>>false</option>
+                            <% else %>
+                                <option <%= 'selected' if option.default %>>true</option>
+                                <option <%= 'selected' if !option.default%>>false</option>
+                            <% end %>
                         </select>
                     <% else %>
-                        <input type="text" name="options[<%= option.name %>]" placeholder="<%= option.default %>">
+                        <input type="text" name="options[<%= option.name %>]" placeholder="<%= option.default %>" value="<%= command_options[option.name.to_s] if defined?(command_options) %>">
                     <% end %>
                 </span>
             </p>
         <% end %>
     <% end %>
-    <p class="actions"><input type="submit" value="Add"></p>
+
+    <p class="actions">
+        <% if defined?(command_options)%>
+            <input type="submit" name="action" value="Delete">
+            <input type="submit" name="action" value="Update">
+        <% else %>
+            <input type="submit" name="action" value="Add">
+        <% end %>
+    </p>
 </form>

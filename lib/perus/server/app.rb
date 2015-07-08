@@ -32,14 +32,76 @@ module Perus::Server
         extend Admin
 
         admin :system
-        admin :config
         admin :group
         admin :alert
-        admin :script
+        admin :config, true
+        admin :script, true
 
         # static admin index page
         get '/admin' do
             redirect '/admin/systems'
+        end
+
+        post '/admin/scripts/:id/commands' do
+            script = Script.with_pk!(params['id'])
+            script_command = ScriptCommand.new
+            script_command.script_id = params['id']
+            script_command.order = script.largest_order + 1
+
+            command_config = CommandConfig.create_with_params(params)
+            script_command.command_config_id = command_config.id
+
+            begin
+                script_command.save
+            rescue
+                if script_command.command_config_id
+                    CommandConfig.with_pk!(script_command.command_config_id).destroy
+                end
+            end
+
+            redirect "/admin/scripts/#{params['id']}"
+        end
+
+        post '/admin/scripts/:script_id/commands/:id' do
+            script_command = ScriptCommand.with_pk!(params['id'])
+            if params['action'] == 'Delete'
+                script_command.destroy
+            else
+
+            end
+
+            redirect "/admin/scripts/#{params['script_id']}"
+        end
+
+        post '/admin/configs/:id/metrics' do
+            config = Config.with_pk!(params['id'])
+            config_metric = ConfigMetric.new
+            config_metric.config_id = params['id']
+            config_metric.order = config.largest_order + 1
+
+            command_config = CommandConfig.create_with_params(params)
+            config_metric.command_config_id = command_config.id
+
+            begin
+                config_metric.save
+            rescue
+                if config_metric.command_config_id
+                    CommandConfig.with_pk!(config_metric.command_config_id).destroy
+                end
+            end
+
+            redirect "/admin/configs/#{params['id']}"
+        end
+
+        post '/admin/configs/:config_id/metrics/:id' do
+            config_metric = ConfigMetric.with_pk!(params['id'])
+            if params['action'] == 'Delete'
+                config_metric.destroy
+            else
+
+            end
+
+            redirect "/admin/configs/#{params['config_id']}"
         end
 
 

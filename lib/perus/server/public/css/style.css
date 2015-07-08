@@ -390,6 +390,10 @@ article.graph {
     margin-top: 5px;
 }
 
+form + #add-command {
+    margin-top: 40px;
+}
+
     #add-command select {
         margin-left: 7px;
     }

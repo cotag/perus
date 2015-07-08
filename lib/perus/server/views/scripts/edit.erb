@@ -1,4 +1,9 @@
-<h2 class="edit">Metrics</h2>
+<h2 class="edit">Commands</h2>
+
+<% @record.script_commands.each do |script_command| %>
+    <%= erb :command_config, locals: {command: script_command.command_config.command_class, action: "/admin/scripts/#{@record.id}/commands/#{script_command.id}", command_options: script_command.command_config.options} %>
+<% end %>
+
 <p id="add-command">
     Add command:
     <select id="command-select">
@@ -16,7 +21,7 @@
 <script src="/js/jquery.js"></script>
 <script>
     $('#command-select').change(function() {
-        $('form.command').hide();
-        $('form[data-command="' + $(this).val() + '"]').show();
+        $('form.command.new').hide();
+        $('form.command.new[data-command="' + $(this).val() + '"]').show();
     });
 </script>
