@@ -8,6 +8,7 @@ module Perus::Pinger
         option :timeout_seconds, default: 2
         option :host, default: 'localhost'
         option :port, default: 9222
+        abstract!
 
         def send_command(command)
             @ws.send(command)

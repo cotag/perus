@@ -35,7 +35,7 @@ module Perus::Server
                         if @record.valid?
                             begin
                                 @record.save
-                                redirect to('/admin/#{plural}')
+                                redirect '/admin/#{plural}'
                             rescue
                             end
                         end
@@ -57,7 +57,7 @@ module Perus::Server
                         if @record.valid?
                             begin
                                 @record.update(params[:record])
-                                redirect to('/admin/#{plural}')
+                                redirect '/admin/#{plural}'
                             rescue
                             end
                         end
@@ -70,7 +70,7 @@ module Perus::Server
                     delete '/admin/#{plural}/:id' do
                         @record = #{klass}.with_pk!(params['id'])
                         @record.destroy
-                        redirect to('/admin/#{plural}')
+                        redirect '/admin/#{plural}'
                     end
                 }
             "

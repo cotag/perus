@@ -6,7 +6,7 @@ require 'uri'
 
 DEFAULT_PINGER_OPTIONS = {
     'system_id' => 1,
-    'server' => 'http://localhost:3000/'
+    'server' => 'http://127.0.0.1:3000/'
 }
 
 module Perus::Pinger

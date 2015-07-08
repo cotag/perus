@@ -76,6 +76,14 @@ module Perus::Pinger
             @metric
         end
 
+        def self.abstract!
+            @abstract = true
+        end
+
+        def self.abstract?
+            @abstract
+        end
+
         # create a command instance and initialise it with the provided option
         # values (hash where keys are option names). any restricted options are
         # validated first, and an exception is thrown if the provided value is

@@ -108,7 +108,7 @@ main {
 
             main > form > p span {
                 display: inline-block;
-                padding-left: 100px;
+                padding-left: 120px;
                 width: 100%;
             }
 
@@ -139,6 +139,14 @@ main {
         /* tables */
         main table {
             width: 100%;
+        }
+
+        main table th {
+            text-align: left;
+            padding-left: 5px;
+            padding-bottom: 3px;
+            font-size: 13px;
+            border-bottom: 1px solid #eee;
         }
 
         main table tr:nth-child(odd) td {
@@ -356,14 +364,51 @@ article.graph {
         color: #999;
     }
 
-/* commands */
-.command h2 {
-    margin-bottom: 3px;
+/* commands / actions */
+.command {
+    margin-top: 20px;
 }
 
-.command > p {
-    font-size: 12px;
-    line-height: 16px;
-    color: #777;
-    margin-bottom: 20px;
+    .command h1 {
+        margin-bottom: 3px;
+        font-size: 16px;
+    }
+
+    .command > p {
+        font-size: 12px;
+        line-height: 16px;
+        color: #777;
+        margin-bottom: 20px;
+    }
+
+#add-action {
+    font-size: 14px;
+    margin-top: 5px;
 }
+
+    #add-action select {
+        margin-left: 7px;
+    }
+
+#actions {
+    margin-top: 20px;
+}
+
+    #actions > p {
+        font-size: 13px;
+    }
+
+    #actions #command-col {
+        width: 160px;
+    }
+
+    #actions #completed-col {
+        width: 180px;
+    }
+
+    #actions #delete-col {
+        width: 60px;
+    }
+
+
+

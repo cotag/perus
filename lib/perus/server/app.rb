@@ -43,6 +43,115 @@ module Perus::Server
 
 
         #----------------------
+        # API
+        #----------------------
+        # csv for graphs shown on system page
+        get '/systems/:id/values' do
+            system  = System.with_pk!(params['id'])
+            metrics = params[:metrics].to_s.split(',')
+
+            # find all values for the requested metrics
+            dataset = system.values_dataset.where(metric: metrics)
+
+            # the graphing library requires multiple series to be provided in
+            # row format (date, series 1, series 2 etc) so each value is
+            # grouped into a timestamp update window
+            updates = dataset.all.group_by(&:timestamp)
+
+            # loop from start to end generating the response csv
+            timestamps = updates.keys.sort
+            csv = "Date,#{params['metrics']}\n"
+
+            timestamps.each do |timestamp|
+                date = Time.at(timestamp).strftime('%Y-%m-%d %H:%M:%S')
+                csv << date << ','
+                
+                values = Array.new(metrics.length)
+                records = updates[timestamp]
+
+                records.each do |record|
+                    values[metrics.index(record.metric)] = record.num_value
+                end
+
+                csv << values.join(',') << "\n"
+            end
+
+            csv
+        end
+
+        # receive data from a client
+        post '/systems/:id/ping' do
+            timestamp = Time.now.to_i
+
+            # update the system with its last known ip and update time
+            system = System.with_pk!(params['id'])
+            system.last_updated = timestamp
+            system.ip = request.ip
+
+            # errors is either nil or a hash of the format - module: [err, ...]
+            system.save_metric_errors(params, timestamp)
+
+            # add each new value, a later process cleans up old values
+            system.save_values(params, timestamp)
+
+            # save action return values and prevent them from running again
+            system.save_actions(params, timestamp)
+
+            # ip, last updated, uploads and metrics are now updated. these are
+            # stored on the system.
+            system.save
+            content_type :json
+            {success: true}.to_json
+        end
+
+        # system config
+        get '/systems/:id/config' do
+            system = System.with_pk!(params['id'])
+            config = system.config.config
+            actions = system.actions_dataset.where(timestamp: nil).all
+            config['actions'] = actions.map(&:config_hash)
+            content_type :json
+            config.to_json
+        end
+
+        # clear collection errors
+        delete '/systems/:id/errors' do
+            system = System.with_pk!(params['id'])
+            system.collection_errors.each(&:delete)
+            redirect "/systems/#{system.id}"
+        end
+
+        # create a new action
+        post '/systems/:id/actions' do
+            action = Action.new
+            action.system_id = params['id']
+            action.command = params['command']
+
+            if params['options']
+                action.options = params['options'].reject do |attr, value|
+                    value.empty?
+                end
+            else
+                action.options = {}
+            end
+
+            begin
+                action.save
+            rescue
+            end
+
+            redirect "/systems/#{params['id']}"
+        end
+
+        # delete an action. deletion also clears any uploaded files.
+        delete '/systems/:system_id/actions/:id' do
+            action = Action.with_pk!(params['id'])
+            action.destroy
+            redirect "/systems/#{params['system_id']}"
+        end
+
+
+        #----------------------
         # frontend
         #----------------------
         # overview
@@ -108,82 +217,8 @@ module Perus::Server
 
             # collect command names for creating actions
             @commands = Perus::Pinger::Command.subclasses.reject(&:metric?)
+            @commands.reject!(&:abstract?)
             erb :system
-        end
-
-        get '/systems/:id/values' do
-            system  = System.with_pk!(params['id'])
-            metrics = params[:metrics].to_s.split(',')
-
-            # find all values for the requested metrics
-            dataset = system.values_dataset.where(metric: metrics)
-
-            # the graphing library requires multiple series to be provided in
-            # row format (date, series 1, series 2 etc) so each value is
-            # grouped into a timestamp update window
-            updates = dataset.all.group_by(&:timestamp)
-
-            # loop from start to end generating the response csv
-            timestamps = updates.keys.sort
-            csv = "Date,#{params['metrics']}\n"
-
-            timestamps.each do |timestamp|
-                date = Time.at(timestamp).strftime('%Y-%m-%d %H:%M:%S')
-                csv << date << ','
-                
-                values = Array.new(metrics.length)
-                records = updates[timestamp]
-
-                records.each do |record|
-                    values[metrics.index(record.metric)] = record.num_value
-                end
-
-                csv << values.join(',') << "\n"
-            end
-
-            csv
-        end
-
-        # receive data from a system
-        post '/systems/:id/ping' do
-            timestamp = Time.now.to_i
-
-            # update the system with its last known ip and update time
-            system = System.with_pk!(params['id'])
-            system.last_updated = timestamp
-            system.ip = request.ip
-
-            # errors is either nil or a hash of the format - module: [err, ...]
-            system.save_metric_errors(params, timestamp)
-
-            # add each new value, a later process cleans up old values
-            system.save_values(params, timestamp)
-
-            # save action return values and prevent them from running again
-            system.save_actions(params, timestamp)
-
-            # ip, last updated, uploads and metrics are now updated. these are
-            # stored on the system.
-            system.save
-            content_type :json
-            {success: true}.to_json
-        end
-
-        # system config
-        get '/systems/:id/config' do
-            system = System.with_pk!(params['id'])
-            config = system.config.config
-            actions = system.actions_dataset.where(timestamp: nil).all
-            config['actions'] = actions.map(&:config_hash)
-            content_type :json
-            config.to_json
-        end
-
-        # clear collection errors
-        delete '/systems/:id/errors' do
-            system = System.with_pk!(params['id'])
-            system.collection_errors.each(&:delete)
-            redirect "/systems/#{system.id}"
         end
 
         # helper to make uploads publicly accessible

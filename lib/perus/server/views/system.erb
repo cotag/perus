@@ -20,6 +20,8 @@
     </dl>
 </section>
 
+
+<!-- numeric metric graphs -->
 <script src="/js/dygraph-combined.js"></script>
 <% @num_metrics.each do |name, metrics| %>
     <article class="graph">
@@ -37,40 +39,106 @@
     </article>
 <% end %>
 
-<h1>Actions</h1>
-<select>
-    <option></option>
-    <% @commands.each do |command| %>
-        <option><%= command.human_name %></option>
-    <% end %>
-</select>
+
+<!-- command actions -->
+<h2>Actions</h2>
+<p id="add-action">
+    Add action:
+    <select id="command-select">
+        <option></option>
+        <% @commands.each do |command| %>
+            <option value="<%= command.name %>"><%= command.human_name %></option>
+        <% end %>
+    </select>
+</p>
+
+<!-- new commands -->
 <% @commands.each do |command| %>
-    <form class="command">
-        <h2><%= command.human_name %></h2>
+    <form class="command" data-command="<%= command.name %>" style="display: none" method="POST" action="/systems/<%= @system.id %>/actions">
+        <h1><%= command.human_name %></h1>
         <p><%= command.description %></p>
+        <input type="hidden" name="command" value="<%= command.name.demodulize %>">
+
         <% unless command.options.empty? %>
             <% command.options.each do |option| %>
                 <p>
                     <label for="<%= option.name %>"><%= option.name.to_s.humanize %>:</label>
                     <span>
                         <% if option.boolean? %>
-                            <select>
+                            <select name="options[<%= option.name %>]">
                                 <option <%= 'selected' if option.default %>>true</option>
                                 <option <%= 'selected' if !option.default%>>false</option>
                             </select>
                         <% else %>
-                            <input type="text" name="<%= option.name %>" placeholder="<%= option.default %>">
+                            <input type="text" name="options[<%= option.name %>]" placeholder="<%= option.default %>">
                         <% end %>
                     </span>
                 </p>
             <% end %>
-        <% else %>
-            <p>No options</p>
         <% end %>
         <p class="actions"><input type="submit" value="Create"></p>
     </form>
 <% end %>
 
+<!-- existing actions -->
+<section id="actions">
+    <% if @system.actions.count > 0 %>
+        <table>
+            <tr>
+                <th id="command-col">Command</th>
+                <th id="options-col">Options</th>
+                <th id="completed-col">Completed</th>
+                <th id="response-col">Response</th>
+                <th id="delete-col"></th>
+            </tr>
+            <% @system.actions.each do |action| %>
+                <tr>
+                    <td><%= action.command %></td>
+                    <td><%= action.options %></td>
+                    <td><%= action.timestamp || 'PENDING' %></td>
+                    <td>
+                        <% if action.timestamp %>
+                            <% unless action.success %>
+                                <%= action.response %>
+                            <% else %>
+                                <% if action.file %>
+                                    file...
+                                <% else %>
+                                    Success
+                                <% end %>
+                            <% end %>
+                        <% end %>
+                    </td>
+
+                    <td>
+                        <form action="/systems/<%= @system.id %>/actions/<%= action.id %>" method="POST" class="delete">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <input type="submit" value="Delete">
+                        </form>
+                    </td>
+                </tr>
+            <% end %>
+        </table>
+    <% else %>
+        <p>No pending actions</p>
+    <% end %>
+</section>
+
+<script src="/js/jquery.js"></script>
+<script>
+    $('#command-select').change(function() {
+        $('form.command').hide();
+        $('form[data-command="' + $(this).val() + '"]').show();
+    });
+
+    $('form.delete').submit(function(event) {
+        if (!confirm('Are you sure you want to delete this action?'))
+            event.preventDefault();
+    });
+</script>
+
+
+<!-- metric errors -->
 <% if @system.collection_errors.length > 0 %>
     <section id="errors">
         <h1>Collection Errors</h1>
@@ -86,3 +154,4 @@
         </form>
     </section>
 <% end %>
+
