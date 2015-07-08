@@ -4,7 +4,7 @@ module Perus::Pinger
                      expression specified by "grep". Returns the resulting
                      string to the server under the metric called "name". Valid
                      values for "path" are contained in the pinger config file.'
-        option :path
+        option :path, restricted: true
         option :grep
         option :name
         metric!

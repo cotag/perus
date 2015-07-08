@@ -4,8 +4,9 @@ module Perus::Pinger
     class Option
         attr_reader :name, :default, :restricted
 
-        def initialize(name, settings)
+        def initialize(name, settings, command)
             @name = name
+            @command = command
             @default = settings[:default]
             @restricted = settings[:restricted] == true
         end
@@ -16,15 +17,18 @@ module Perus::Pinger
 
         def process(results, values)
             value = values[name.to_s]
+            value = value || default
 
-            if restricted
-            end
-
-            if value.nil? && default.nil?
+            if value.nil?
                 raise "#{name} is a required option"
             end
 
-            results[name] = value || default
+            if restricted
+                allowed = Pinger.options[@command.name.demodulize][@name.to_s]
+                raise "the value passed to #{@name} is not allowed" unless allowed.include?(value)
+            end
+
+            results[name] = value
         end
     end
 
@@ -51,7 +55,7 @@ module Perus::Pinger
         # and their values (defaults merged with provided values)
         def self.option(name, option_settings = {})
             @options ||= []
-            @options << Option.new(name, option_settings)
+            @options << Option.new(name, option_settings, self)
         end
 
         def self.options

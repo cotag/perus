@@ -5,23 +5,55 @@ require 'json'
 require 'uri'
 
 DEFAULT_PINGER_OPTIONS = {
-    'system_id' => 1,
-    'server' => 'http://127.0.0.1:3000/'
+    '__anonymous__' => {
+        'system_id' => 1,
+        'server' => 'http://127.0.0.1:3000/'
+    },
+
+    # restricted values
+    'Value' => {
+        'path' => []
+    },
+
+    'Screenshot' => {
+        'path' => []
+    },
+
+    'Process' => {
+        'process_path' => []
+    },
+
+    'Upload' => {
+        'path' => []
+    },
+
+    'Replace' => {
+        'path' => []
+    },
+
+    'RemovePath' => {
+        'path' => []
+    },
+
+    'KillProcess' => {
+        'process_name' => []
+    }
 }
 
 module Perus::Pinger
     class Pinger
-        attr_reader :options
+        def self.options
+            @options ||= Perus::Options.new
+        end
 
         def initialize(options_path = DEFAULT_PINGER_OPTIONS_PATH)
-            @options = Perus::Options.new
-            options.load(options_path, DEFAULT_PINGER_OPTIONS)
+            Pinger.options.load(options_path, DEFAULT_PINGER_OPTIONS)
 
             # cache urls on initialisation since the urls depend on values known
             # at startup and that won't change over the object lifetime
-            config_path = URI("/systems/#{options.system_id}/config")
-            pinger_path = URI("/systems/#{options.system_id}/ping")
-            server_uri  = URI(options.server)
+            config_path = URI("/systems/#{Pinger.options.system_id}/config")
+            pinger_path = URI("/systems/#{Pinger.options.system_id}/ping")
+            server_uri  = URI(Pinger.options.server)
 
             @config_url = (server_uri + config_path).to_s
             @pinger_url = (server_uri + pinger_path).to_s
@@ -55,15 +87,15 @@ module Perus::Pinger
             # load metric and command modules based on the config
             json['metrics'].each do |config|
                 begin
-                    metric = ::Perus::Pinger.const_get(config['type'])
-                    @metric_errors[metric.name] ||= []
-                    @metrics << metric.new(config['options'])
-                rescue => e
-                    if e.is_a?(NameError)
-                        @metric_errors[config['type']] = e.inspect
+                    if ::Perus::Pinger.const_defined?(config['type'])
+                        metric = ::Perus::Pinger.const_get(config['type'])
+                        @metric_errors[metric.name] ||= []
+                        @metrics << metric.new(config['options'])
                     else
-                        @metric_errors[metric.name] << e.inspect
+                        @metric_errors[config['type']] = e.inspect
                     end
+                rescue => e
+                    @metric_errors[metric.name] << e.inspect
                 end
             end
 
