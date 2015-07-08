@@ -13,8 +13,10 @@
             <dt><%= name %></dt>
             <dd><%= value %></dd>
         <% end %>
-        <dt>Links:</dt>
-        <dd><%= @links %></dd>
+        <% if @links %>
+            <dt>Links:</dt>
+            <dd><%= @links %></dd>
+        <% end %>
     </dl>
 </section>
 

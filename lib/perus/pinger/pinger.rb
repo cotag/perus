@@ -30,15 +30,15 @@ module Perus::Pinger
             @metric_results = {}
             @metric_errors = {}
 
-            @commands = []
-            @command_results = {}
-            @late_commands = []
+            @actions = []
+            @action_results = {}
+            @late_actions = []
         end
 
         def run
             load_config
             run_metrics
-            run_commands
+            run_actions
             send_response
             cleanup
         end
@@ -50,7 +50,7 @@ module Perus::Pinger
             # load the system config by requesting it from the perus server
             json = JSON.parse(RestClient.get(@config_url))
             json['metrics'] ||= []
-            json['commands'] ||= []
+            json['actions'] ||= []
 
             # load metric and command modules based on the config
             json['metrics'].each do |config|
@@ -58,7 +58,7 @@ module Perus::Pinger
                     metric = ::Perus::Pinger.const_get(config['type'])
                     @metric_errors[metric.name] ||= []
                     @metrics << metric.new(config['options'])
-                rescue Exception => e
+                rescue => e
                     if e.is_a?(NameError)
                         @metric_errors[config['type']] = e.inspect
                     else
@@ -67,13 +67,16 @@ module Perus::Pinger
                 end
             end
 
-            json['commands'].each do |config|
+            json['actions'].each do |config|
                 begin
                     command = ::Perus::Pinger.const_get(config['type'])
-                    @commands << command.new(config['options'])
-                rescue Exception => e
-                    if config['options']['id']
-                        @command_results[config['options']['id']] = e.inspect
+                    @actions << command.new(config['options'], config['id'])
+                rescue => e
+                    if config['id']
+                        @action_results[config['id']] = e.inspect
+                    else
+                        puts 'Error - action does not have an associated id'
+                        p config
                     end
                 end
             end
@@ -87,26 +90,26 @@ module Perus::Pinger
                 begin
                     result = metric.run
                     @metric_results.merge!(result)
-                rescue Exception => e
+                rescue => e
                     @metric_errors[metric.class.name] << e.inspect
                 end
             end
         end
 
-        def run_commands
-            @commands.each do |command|
+        def run_actions
+            @actions.each do |action|
                 begin
-                    result = command.run
+                    result = action.run
 
                     if result.instance_of?(Proc)
-                        @late_commands << result
+                        @late_actions << result
                         result = true
                     end
 
-                    @command_results[command.id] = result
+                    @action_results[action.id] = result
 
-                rescue Exception => e
-                    @command_results[command.id] = e.inspect
+                rescue => e
+                    @action_results[action.id] = e.inspect
                 end
             end
         end
@@ -128,11 +131,11 @@ module Perus::Pinger
         def send_response
             # prepare the response and replace file results with a reference
             # to the uploaded file. files are sent as top level parameters in
-            # the payload, while metric and command results are sent as a json
+            # the payload, while metric and action results are sent as a json
             # object with a reference to these files.
             payload = {}
             add_to_payload(payload, 'metrics', @metric_results)
-            add_to_payload(payload, 'commands', @command_results)
+            add_to_payload(payload, 'actions', @action_results)
 
             # metric_errors is created with a key for each metric type. most
             # metrics should run without any errors, so remove these entries
@@ -142,7 +145,7 @@ module Perus::Pinger
 
             begin
                 RestClient.post(@pinger_url, payload)
-            rescue Exception => e
+            rescue => e
                 puts 'Ping failed with exception'
                 puts e.inspect
             end
@@ -152,9 +155,32 @@ module Perus::Pinger
         # cleanup
         #----------------------
         def cleanup
-            @metrics.each(&:cleanup)
-            @commands.each(&:cleanup)
-            @late_commands.each(&:call)
+            @metrics.each do |metric|
+                begin
+                    metric.cleanup
+                rescue => e
+                    puts 'Error running metric cleanup'
+                    puts e.inspect
+                end
+            end
+
+            @actions.each do |action|
+                begin
+                    action.cleanup
+                rescue => e
+                    puts 'Error running action cleanup'
+                    puts e.inspect
+                end
+            end
+
+            @late_actions.each do |code|
+                begin
+                    code.call
+                rescue => e
+                    puts 'Error running late action'
+                    puts e.inspect
+                end
+            end
         end
     end
 end

@@ -1,7 +1,7 @@
 module Perus::Server
     class Value < Sequel::Model
         plugin :validation_helpers
-        many_to_one :group
+        many_to_one :system
 
         def validate
             super

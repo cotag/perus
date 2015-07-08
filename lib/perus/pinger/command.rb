@@ -67,7 +67,7 @@ module Perus::Pinger
         # values (hash where keys are option names). any restricted options are
         # validated first, and an exception is thrown if the provided value is
         # not one of the allowed values for the option.
-        def initialize(option_values)
+        def initialize(option_values, id = nil)
             @options = OpenStruct.new
             self.class.options.each do |option|
                 option.process(@options, option_values)
@@ -75,7 +75,7 @@ module Perus::Pinger
 
             # commands (not metrics) have ids that uniquely identify a command
             # instance and its response
-            @id = option_values['id']
+            @id = id
         end
 
         def run

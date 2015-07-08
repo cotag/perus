@@ -4,9 +4,11 @@ require 'sequel/plugins/serialization'
 module Perus::Server
     module DB
         def self.start
-            # connect/create the database and run any new migrations
             Sequel.extension :migration
-            @db = Sequel.sqlite(Server.options.db_path)
+            Sequel.extension :inflector
+
+            # connect/create the database and run any new migrations
+            @db = Sequel.sqlite(Server.options.db_path, integer_booleans: true)
             Sequel::Migrator.run(@db, File.join(__dir__, 'migrations'))
 
             # load models - these rely on an existing db connection
@@ -16,6 +18,7 @@ module Perus::Server
             require File.join(__dir__, 'models', 'group')
             require File.join(__dir__, 'models', 'error')
             require File.join(__dir__, 'models', 'alert')
+            require File.join(__dir__, 'models', 'action')
         end
     end
 end

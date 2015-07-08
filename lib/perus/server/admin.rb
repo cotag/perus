@@ -1,12 +1,9 @@
-require 'active_support'
-require 'active_support/core_ext/string'
-
 module Perus::Server
     module Admin
         def admin(type)
             plural   = type.to_s.pluralize
             singular = plural.singularize
-            title    = singular.titlecase
+            title    = singular.titleize
             klass    = title
 
             class_eval "

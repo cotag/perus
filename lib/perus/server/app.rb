@@ -49,7 +49,15 @@ module Perus::Server
         get '/' do
             systems = System.all
             alerts = Alert.all
-            @alerts = Hash[alerts.zip(alerts.collect {|alert| alert.execute(systems)})]
+            results = alerts.collect do |alert|
+                begin
+                    alert.execute(systems)
+                rescue => e
+                    "An error occurred running this alert: #{e.inspect}"
+                end
+            end
+
+            @alerts = Hash[alerts.zip(results)]
             erb :index
         end
 
@@ -89,7 +97,7 @@ module Perus::Server
             @num_metrics = num_metrics.group_by {|n| n.split('_')[0]}
 
             # make links clickable
-            @links = @system.links.gsub("\n", "<br>")
+            @links = @system.links.to_s.gsub("\n", "<br>")
             URI::extract(@links).each {|uri| @links.gsub!(uri, %Q{<a href="#{uri}">#{uri}</a>})}
 
             # last updated is a timestamp, conver
@@ -132,8 +140,6 @@ module Perus::Server
 
         # receive data from a system
         post '/systems/:id/ping' do
-            # values are sent as a json object
-            values = JSON.parse(params[:values])
             timestamp = Time.now.to_i
 
             # update the system with its last known ip and update time
@@ -142,27 +148,13 @@ module Perus::Server
             system.ip = request.ip
 
             # errors is either nil or a hash of the format - module: [err, ...]
-            errors = values.delete('errors')
-            if errors
-                errors.each do |name, module_errors|
-                    module_errors.each do |error|
-                        Error.create(
-                            system_id: system.id,
-                            timestamp: timestamp,
-                            module: name,
-                            description: error
-                        )
-                    end
-                end
-            end
-
-            # the system object stores files on disk and updates an 'uploads'
-            # field with a list of filenames and mimetypes
-            uploads = values.delete('uploads')
-            system.save_uploads(uploads, params) if uploads
+            system.save_metric_errors(params, timestamp)
 
             # add each new value, a later process cleans up old values
-            system.save_values(values, timestamp)
+            system.save_values(params, timestamp)
+
+            # save action return values and prevent them from running again
+            system.save_actions(params, timestamp)
 
             # ip, last updated, uploads and metrics are now updated. these are
             # stored on the system.
