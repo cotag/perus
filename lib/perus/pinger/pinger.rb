@@ -4,7 +4,7 @@ require 'ostruct'
 require 'json'
 require 'uri'
 
-DEFAULT_OPTIONS = {
+DEFAULT_PINGER_OPTIONS = {
     'system_id' => 1,
     'server' => 'http://localhost:3000/'
 }
@@ -13,9 +13,9 @@ module Perus::Pinger
     class Pinger
         attr_reader :options
 
-        def initialize(options_path = DEFAULT_OPTIONS_PATH)
+        def initialize(options_path = DEFAULT_PINGER_OPTIONS_PATH)
             @options = Perus::Options.new
-            options.load(options_path, DEFAULT_OPTIONS)
+            options.load(options_path, DEFAULT_PINGER_OPTIONS)
 
             # cache urls on initialisation since the urls depend on values known
             # at startup and that won't change over the object lifetime

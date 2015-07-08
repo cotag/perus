@@ -1,6 +1,6 @@
 require 'thin'
 
-DEFAULT_OPTIONS = {
+DEFAULT_SERVER_OPTIONS = {
     'uploads_dir' => './uploads',
     'uploads_url' => 'http://localhost:3000/uploads/',
     'db_path' => './perus.db',
@@ -11,8 +11,8 @@ DEFAULT_OPTIONS = {
 
 module Perus::Server
     class Server
-        def initialize(options_path = DEFAULT_OPTIONS_PATH)
-            self.class.options.load(options_path, DEFAULT_OPTIONS)
+        def initialize(options_path = DEFAULT_SERVER_OPTIONS_PATH)
+            self.class.options.load(options_path, DEFAULT_SERVER_OPTIONS)
             DB.start
         end
 

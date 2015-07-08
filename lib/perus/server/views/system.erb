@@ -37,6 +37,40 @@
     </article>
 <% end %>
 
+<h1>Actions</h1>
+<select>
+    <option></option>
+    <% @commands.each do |command| %>
+        <option><%= command.human_name %></option>
+    <% end %>
+</select>
+<% @commands.each do |command| %>
+    <form class="command">
+        <h2><%= command.human_name %></h2>
+        <p><%= command.description %></p>
+        <% unless command.options.empty? %>
+            <% command.options.each do |option| %>
+                <p>
+                    <label for="<%= option.name %>"><%= option.name.to_s.humanize %>:</label>
+                    <span>
+                        <% if option.boolean? %>
+                            <select>
+                                <option <%= 'selected' if option.default %>>true</option>
+                                <option <%= 'selected' if !option.default%>>false</option>
+                            </select>
+                        <% else %>
+                            <input type="text" name="<%= option.name %>" placeholder="<%= option.default %>">
+                        <% end %>
+                    </span>
+                </p>
+            <% end %>
+        <% else %>
+            <p>No options</p>
+        <% end %>
+        <p class="actions"><input type="submit" value="Create"></p>
+    </form>
+<% end %>
+
 <% if @system.collection_errors.length > 0 %>
     <section id="errors">
         <h1>Collection Errors</h1>

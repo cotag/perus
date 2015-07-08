@@ -10,6 +10,10 @@ module Perus::Pinger
             @restricted = settings[:restricted] == true
         end
 
+        def boolean?
+            default.is_a?(TrueClass) || default.is_a?(FalseClass)
+        end
+
         def process(results, values)
             value = values[name]
 
@@ -26,6 +30,10 @@ module Perus::Pinger
 
     class Command
         attr_reader :options, :id
+
+        def self.human_name
+            name.demodulize.underscore.humanize.titlecase
+        end
 
         # set or get command/metric description
         def self.description(text = nil)
@@ -52,6 +60,11 @@ module Perus::Pinger
 
         def self.inherited(subclass)
             subclass.options.concat(self.options)
+            Command.subclasses << subclass
+        end
+
+        def self.subclasses
+            @subclasses ||= []
         end
 
         # command classes which are intended to run as metrics call this method

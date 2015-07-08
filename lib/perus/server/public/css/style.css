@@ -355,3 +355,15 @@ article.graph {
         font-size: 13px;
         color: #999;
     }
+
+/* commands */
+.command h2 {
+    margin-bottom: 3px;
+}
+
+.command > p {
+    font-size: 12px;
+    line-height: 16px;
+    color: #777;
+    margin-bottom: 20px;
+}
