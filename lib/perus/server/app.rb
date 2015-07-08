@@ -66,8 +66,8 @@ module Perus::Server
             script_command = ScriptCommand.with_pk!(params['id'])
             if params['action'] == 'Delete'
                 script_command.destroy
-            else
-
+            elsif params['action'] == 'Update'
+                script_command.command_config.update_options!(params)
             end
 
             redirect "/admin/scripts/#{params['script_id']}"
@@ -97,8 +97,8 @@ module Perus::Server
             config_metric = ConfigMetric.with_pk!(params['id'])
             if params['action'] == 'Delete'
                 config_metric.destroy
-            else
-
+            elsif params['action'] == 'Update'
+                config_metric.command_config.update_options!(params)
             end
 
             redirect "/admin/configs/#{params['config_id']}"
