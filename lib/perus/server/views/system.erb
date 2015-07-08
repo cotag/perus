@@ -89,11 +89,17 @@
                 <tr>
                     <td><%= action.command_name %></td>
                     <td><%= action.options %></td>
-                    <td><%= action.timestamp || 'PENDING' %></td>
+                    <td>
+                        <% if action.timestamp %>
+                            <%= Time.at(action.timestamp).ctime %>
+                        <% else %>
+                            PENDING
+                        <% end %>
+                    </td>
                     <td>
                         <% if action.timestamp %>
                             <% unless action.success %>
-                                <%= action.response %>
+                                <%= clean_arrows(action.response) %>
                             <% else %>
                                 <% if action.file %>
                                     file...
@@ -139,7 +145,7 @@
         <% @system.collection_errors.each do |error| %>
             <article>
                 <h1><%= error.module %> - <%= Time.at(error.timestamp).ctime %></h1>
-                <p><%= error.description.gsub('<', '&lt;').gsub('>', '&gt;') %></p>
+                <p><%= clean_arrows(error.description) %></p>
             </article>
         <% end %>
         <form action="/systems/<%= @system.id %>/errors" method="POST">

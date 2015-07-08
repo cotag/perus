@@ -11,10 +11,14 @@ module Perus::Server
 
         def config_hash
             if command_config_id
-                command_config.config_hash
+                hash = command_config.config_hash
             else
-                script.config_hash
+                hash = script.config_hash
             end
+
+            # replace the command config/script id with the action's id
+            hash['id'] = id
+            hash
         end
 
         def command_name

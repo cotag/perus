@@ -7,8 +7,14 @@ module Perus::Server
             name.gsub(' ', '_').camelize
         end
 
-        def config_hashes
-            script_commands.collect(&:config_hash)
+        def config_hash
+            {
+                id: id,
+                type: 'Script',
+                options: {
+                    commands: script_commands.collect(&:config_hash)
+                }
+            }
         end
 
         def largest_order

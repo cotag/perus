@@ -92,7 +92,8 @@ module Perus::Server
             actions = JSON.parse(params['actions'])
 
             actions.each do |id, result|
-                action = Action.with_pk!(id)
+                # JSON.dump turns integer keys into strings
+                action = Action.with_pk!(id.to_i)
                 action.timestamp = timestamp
 
                 if result == true

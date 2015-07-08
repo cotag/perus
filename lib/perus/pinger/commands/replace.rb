@@ -7,5 +7,12 @@ module Perus::Pinger
         option :path, restricted: true
         option :grep
         option :replacement
+
+        def run
+            text = IO.read(options.path)
+            text.gsub!(/#{options.grep}/, options.replacement)
+            IO.write(options.path, text)
+            true
+        end
     end
 end

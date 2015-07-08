@@ -13,6 +13,7 @@ module Perus
             require './pinger/commands/restart'
             require './pinger/commands/upload'
             require './pinger/commands/upgrade'
+            require './pinger/commands/script'
 
             # metrics
             require './pinger/metrics/chrome'

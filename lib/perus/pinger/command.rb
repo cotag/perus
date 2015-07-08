@@ -15,7 +15,7 @@ module Perus::Pinger
         end
 
         def process(results, values)
-            value = values[name]
+            value = values[name.to_s]
 
             if restricted
             end

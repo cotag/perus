@@ -170,11 +170,8 @@ module Perus::Server
         # system config
         get '/systems/:id/config' do
             system = System.with_pk!(params['id'])
-            config = system.config.config
-            actions = system.actions_dataset.where(timestamp: nil).all
-            config['actions'] = actions.map(&:config_hash)
             config = {
-                metrics: system.config.config_hashes,
+                metrics: system.config.metric_hashes,
                 actions: system.pending_actions.map(&:config_hash).flatten
             }
             content_type :json

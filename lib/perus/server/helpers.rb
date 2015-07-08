@@ -6,7 +6,11 @@ module Perus::Server
         end
 
         def nav_item(path, name, li = true)
-            klass = request.path_info == path ? 'selected' : ''
+            if path.start_with?('/admin/')
+                klass = request.path_info.start_with?(path) ? 'selected' : ''
+            else
+                klass = request.path_info == path ? 'selected' : ''
+            end
             anchor = "<a class=\"#{klass}\" href=\"#{path}\">#{name}</a>"
             li ? "<li>#{anchor}</li>" : anchor
         end
@@ -19,6 +23,10 @@ module Perus::Server
         def command_metrics
             metrics = Perus::Pinger::Command.subclasses.select(&:metric?)
             metrics.reject(&:abstract?)
+        end
+
+        def clean_arrows(text)
+            text.gsub('<', '&lt;').gsub('>', '&gt;')
         end
     end
 end
