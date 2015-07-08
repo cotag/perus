@@ -5,8 +5,22 @@ module Perus::Pinger
         option :js
 
         def run
-            execute([%q{{"id":1,"method":"Runtime.evaluate""params":{"expression":"#{js}","objectGroup":"perus","returnByValue":true}}}])
-            true
+            result = false
+            command = '{"id":1,"method":"Runtime.evaluate","params":{"expression":"' + options.js.gsub('"', '\\"') + '","objectGroup":"perus","returnByValue":true}}'
+            
+            execute([command]) do |message|
+                if message.include?('id') && message['id'] == 1
+                    if message.include?('result')
+                        result = message['result'].to_s
+                    elsif message.include?('error')
+                        result = message['error'].to_s
+                    else
+                        result = false
+                    end
+                end
+            end
+
+            result
         end
     end
 end
