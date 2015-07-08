@@ -10,5 +10,15 @@ module Perus::Server
             anchor = "<a class=\"#{klass}\" href=\"#{path}\">#{name}</a>"
             li ? "<li>#{anchor}</li>" : anchor
         end
+
+        def command_actions
+            commands = Perus::Pinger::Command.subclasses.reject(&:metric?)
+            commands.reject(&:abstract?)
+        end
+
+        def command_metrics
+            metrics = Perus::Pinger::Command.subclasses.select(&:metric?)
+            metrics.reject(&:abstract?)
+        end
     end
 end

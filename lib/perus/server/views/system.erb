@@ -44,12 +44,12 @@
 
 <!-- command actions -->
 <h2>Actions</h2>
-<p id="add-action">
+<p id="add-command">
     Add action:
     <select id="command-select">
         <option></option>
         <optgroup label="Commands">
-            <% @commands.each do |command| %>
+            <% command_actions.each do |command| %>
                 <option value="<%= command.name %>"><%= command.human_name %></option>
             <% end %>
         </optgroup>
@@ -62,7 +62,7 @@
 </p>
 
 <!-- new commands -->
-<% @commands.each do |command| %>
+<% command_actions.each do |command| %>
     <%= erb :command_config, locals: {command: command, action: "/systems/#{@system.id}/actions"} %>
 <% end %>
 <% @scripts.each do |script| %>

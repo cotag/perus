@@ -1,0 +1,22 @@
+<h2 class="edit">Metrics</h2>
+<p id="add-command">
+    Add metric:
+    <select id="metric-select">
+        <option></option>
+        <% command_metrics.each do |metric| %>
+            <option value="<%= metric.name %>"><%= metric.human_name %></option>
+        <% end %>
+    </select>
+</p>
+
+<% command_metrics.each do |metric| %>
+    <%= erb :command_config, locals: {command: metric, action: "/admin/configs/#{@record.id}/metrics"} %>
+<% end %>
+
+<script src="/js/jquery.js"></script>
+<script>
+    $('#metric-select').change(function() {
+        $('form.command').hide();
+        $('form[data-command="' + $(this).val() + '"]').show();
+    });
+</script>

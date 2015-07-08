@@ -221,9 +221,6 @@ module Perus::Server
                 @last_updated = 'never updated'
             end
 
-            # collect command names for creating actions
-            @commands = Perus::Pinger::Command.subclasses.reject(&:metric?)
-            @commands.reject!(&:abstract?)
             @scripts = Script.all
             erb :system
         end
