@@ -3,8 +3,8 @@ Sequel.migration do
         create_table(:actions) do
             primary_key :id
             Integer :system_id, null: false
-            String  :command, null: false
-            String  :options, text: true
+            Integer :command_config_id, null: false
+            Integer :script_id, null: false
             Integer :timestamp
             Boolean :success
             String  :response

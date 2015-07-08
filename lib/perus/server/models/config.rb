@@ -1,10 +1,20 @@
 module Perus::Server
     class Config < Sequel::Model
         plugin :validation_helpers
-        plugin :serialization
-        
         one_to_many :systems
-        serialize_attributes :json, :config
+        one_to_many :config_metrics, order: 'name asc'
+
+        def metric_hashes
+            config_metrics.collect(&:config_hash)
+        end
+
+        def largest_order
+            if config_metrics.empty?
+                0
+            else
+                config_metrics.last.order
+            end
+        end
 
         def validate
             super

@@ -1,0 +1,24 @@
+<form class="command" data-command="<%= command.name %>" style="display: none" method="POST" action="<%= action %>">
+    <h1><%= command.human_name %></h1>
+    <p><%= command.description %></p>
+    <input type="hidden" name="command" value="<%= command.name.demodulize %>">
+
+    <% unless command.options.empty? %>
+        <% command.options.each do |option| %>
+            <p>
+                <label for="<%= option.name %>"><%= option.name.to_s.humanize %>:</label>
+                <span>
+                    <% if option.boolean? %>
+                        <select name="options[<%= option.name %>]">
+                            <option <%= 'selected' if option.default %>>true</option>
+                            <option <%= 'selected' if !option.default%>>false</option>
+                        </select>
+                    <% else %>
+                        <input type="text" name="options[<%= option.name %>]" placeholder="<%= option.default %>">
+                    <% end %>
+                </span>
+            </p>
+        <% end %>
+    <% end %>
+    <p class="actions"><input type="submit" value="Add"></p>
+</form>

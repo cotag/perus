@@ -1,10 +1,12 @@
-<h1>System: <%= @system.display_name %></h1>
+<h1>System: <%= @system.name %></h1>
 
 <section id="meta">
     <img src="<%= @uploads['screenshot'] %>">
     <dl>
-        <dt>Name:</dt>
-        <dd><%= @system.name %></dd>
+        <% unless @system.logical_name.empty? %>
+            <dt>Logical Name:</dt>
+            <dd><%= @system.logical_name %></dd>
+        <% end %>
         <dt>Last Updated:</dt>
         <dd><%= @last_updated %></dd>
         <dt>IP:</dt>
@@ -13,7 +15,7 @@
             <dt><%= name %></dt>
             <dd><%= value %></dd>
         <% end %>
-        <% if @links %>
+        <% unless @links.empty? %>
             <dt>Links:</dt>
             <dd><%= @links %></dd>
         <% end %>
@@ -46,38 +48,22 @@
     Add action:
     <select id="command-select">
         <option></option>
-        <% @commands.each do |command| %>
-            <option value="<%= command.name %>"><%= command.human_name %></option>
-        <% end %>
+        <optgroup label="Commands">
+            <% @commands.each do |command| %>
+                <option value="<%= command.name %>"><%= command.human_name %></option>
+            <% end %>
+        </optgroup>
+        <optgroup label="Scripts">
+            <% @scripts.each do |script| %>
+                <option value="<%= script.code_name %>"><%= script.name %></option>
+            <% end %>
+        </optgroup>
     </select>
 </p>
 
 <!-- new commands -->
 <% @commands.each do |command| %>
-    <form class="command" data-command="<%= command.name %>" style="display: none" method="POST" action="/systems/<%= @system.id %>/actions">
-        <h1><%= command.human_name %></h1>
-        <p><%= command.description %></p>
-        <input type="hidden" name="command" value="<%= command.name.demodulize %>">
-
-        <% unless command.options.empty? %>
-            <% command.options.each do |option| %>
-                <p>
-                    <label for="<%= option.name %>"><%= option.name.to_s.humanize %>:</label>
-                    <span>
-                        <% if option.boolean? %>
-                            <select name="options[<%= option.name %>]">
-                                <option <%= 'selected' if option.default %>>true</option>
-                                <option <%= 'selected' if !option.default%>>false</option>
-                            </select>
-                        <% else %>
-                            <input type="text" name="options[<%= option.name %>]" placeholder="<%= option.default %>">
-                        <% end %>
-                    </span>
-                </p>
-            <% end %>
-        <% end %>
-        <p class="actions"><input type="submit" value="Create"></p>
-    </form>
+    <%= erb :command_config, locals: {command: command, action: "/systems/#{@system.id}/actions"} %>
 <% end %>
 
 <!-- existing actions -->

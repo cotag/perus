@@ -18,6 +18,17 @@ module Perus::Server
             validates_unique    :name
         end
 
+        def pending_actions
+            actions_dataset.where(timestamp: nil).all
+        end
+
+        def action_hashes
+            # actions referring to a command_config return a hash when calling
+            # config_hashes, actions referring to scripts return an array.
+            # flatten is needed to merge the two response types together.
+            pending_actions.collect(&:config_hashes).flatten
+        end
+
 
         # ---------------------------------------
         # metrics

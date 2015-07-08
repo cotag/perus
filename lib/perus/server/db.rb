@@ -20,6 +20,10 @@ module Perus::Server
             require File.join(__dir__, 'models', 'alert')
             require File.join(__dir__, 'models', 'action')
             require File.join(__dir__, 'models', 'metric')
+            require File.join(__dir__, 'models', 'script')
+            require File.join(__dir__, 'models', 'command_config')
+            require File.join(__dir__, 'models', 'script_command')
+            require File.join(__dir__, 'models', 'config_metric')
         end
     end
 end

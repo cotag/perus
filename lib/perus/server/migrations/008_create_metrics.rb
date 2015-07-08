@@ -6,7 +6,7 @@ Sequel.migration do
             String  :system_id, null: false
             String  :type, null: false
             String  :file, text: true
-            index [:system_id, :name]
+            index   [:system_id, :name]
         end
     end
 

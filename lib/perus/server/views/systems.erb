@@ -6,8 +6,8 @@
             <% systems.each do |system| %>
                 <a href="/systems/<%= system.id %>">
                     <div class="screenshot" style="background-image: url(<%= system.screenshot_url %>)"></div>
-                    <h1><%= system.display_name %></h1>
-                    <p><%= system.name %> - <%= system.ip || 'unknown IP' %></p>
+                    <h1><%= system.name %></h1>
+                    <p><%= system.logical_name %> - <%= system.ip || 'unknown IP' %></p>
                 </a>
             <% end %>
         </div>

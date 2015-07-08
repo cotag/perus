@@ -35,6 +35,7 @@ module Perus::Server
         admin :config
         admin :group
         admin :alert
+        admin :script
 
         # static admin index page
         get '/admin' do
@@ -110,6 +111,10 @@ module Perus::Server
             config = system.config.config
             actions = system.actions_dataset.where(timestamp: nil).all
             config['actions'] = actions.map(&:config_hash)
+            config = {
+                metrics: system.config.config_hashes,
+                actions: system.pending_actions.map(&:config_hash).flatten
+            }
             content_type :json
             config.to_json
         end
@@ -218,6 +223,7 @@ module Perus::Server
             # collect command names for creating actions
             @commands = Perus::Pinger::Command.subclasses.reject(&:metric?)
             @commands.reject!(&:abstract?)
+            @scripts = Script.all
             erb :system
         end
 
