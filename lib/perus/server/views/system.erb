@@ -22,125 +22,136 @@
     </dl>
 </section>
 
+<nav id="system-nav">
+    <a href="#metrics" name="metrics" class="selected">Metrics</a>
+    <a href="#actions" name="actions">Actions</a>
+    <a href="#errors" name="errors">Errors</a>
+</nav>
 
 <!-- numeric metric graphs -->
-<script src="/js/dygraph-combined.js"></script>
-<% @num_metrics.each do |name, metrics| %>
-    <article class="graph">
-        <h2><%= name.titlecase %></h2>
-        <div id="metric-<%= name %>" style="width: 450px; height: 300px"></div>
-        <script type="text/javascript">
-            var graph = new Dygraph(
-                document.getElementById("metric-<%= name %>"),
-                "/systems/<%= @system.id %>/values?metrics=<%= metrics.join(',') %>",
-                {
-                    labelsSeparateLines: true
-                }
-            );
-        </script>
-    </article>
-<% end %>
+<section id="metrics" class="system-panel">
+    <script src="/js/dygraph-combined.js"></script>
+    <script>
+        window.graphs = [];
+    </script>
 
+    <% @num_metrics.each do |name, metrics| %>
+        <article class="graph" style="width: 45%">
+            <h2><%= name.titlecase %></h2>
+            <div id="metric-<%= name %>" style="width: 100%; height: 300px"></div>
+            <script type="text/javascript">
+                var graph = new Dygraph(
+                    document.getElementById("metric-<%= name %>"),
+                    "/systems/<%= @system.id %>/values?metrics=<%= metrics.join(',') %>",
+                    {
+                        labelsSeparateLines: true
+                    }
+                );
 
-<!-- command actions -->
-<h2>Actions</h2>
-<p id="add-command">
-    Add action:
-    <select id="command-select">
-        <option></option>
-        <optgroup label="Commands">
-            <% command_actions.each do |command| %>
-                <option value="<%= command.name %>"><%= command.human_name %></option>
-            <% end %>
-        </optgroup>
-        <optgroup label="Scripts">
-            <% @scripts.each do |script| %>
-                <option value="<%= script.code_name %>"><%= script.name %></option>
-            <% end %>
-        </optgroup>
-    </select>
-</p>
-
-<!-- new commands -->
-<% command_actions.each do |command| %>
-    <%= erb :command_config, locals: {command: command, action: "/systems/#{@system.id}/actions"} %>
-<% end %>
-<% @scripts.each do |script| %>
-    <form class="command" data-command="<%= script.code_name %>" style="display: none" method="POST" action="/systems/<%= @system.id %>/actions">
-        <h1><%= script.name %></h1>
-        <p><%= script.description %></p>
-        <input type="hidden" name="script_id" value="<%= script.id %>">
-        <p class="actions"><input type="submit" value="Add"></p>
-    </form>
-<% end %>
-
-<!-- existing actions -->
-<section id="actions">
-    <% if @system.actions.count > 0 %>
-        <table>
-            <tr>
-                <th id="command-col">Command</th>
-                <th id="options-col">Options</th>
-                <th id="completed-col">Completed</th>
-                <th id="response-col">Response</th>
-                <th id="delete-col"></th>
-            </tr>
-            <% @system.actions.each do |action| %>
-                <tr>
-                    <td><%= action.command_name %></td>
-                    <td><%= action.options %></td>
-                    <td>
-                        <% if action.timestamp %>
-                            <%= Time.at(action.timestamp).ctime %>
-                        <% else %>
-                            PENDING
-                        <% end %>
-                    </td>
-                    <td>
-                        <% if action.timestamp %>
-                            <% unless action.success %>
-                                <%= clean_arrows(action.response) %>
-                            <% else %>
-                                <% if action.file %>
-                                    file...
-                                <% else %>
-                                    Success
-                                <% end %>
-                            <% end %>
-                        <% end %>
-                    </td>
-
-                    <td>
-                        <form action="/systems/<%= @system.id %>/actions/<%= action.id %>" method="POST" class="delete">
-                            <input type="hidden" name="_method" value="DELETE">
-                            <input type="submit" value="Delete">
-                        </form>
-                    </td>
-                </tr>
-            <% end %>
-        </table>
-    <% else %>
-        <p>No pending actions</p>
+                window.graphs.push(graph);
+            </script>
+        </article>
     <% end %>
 </section>
 
-<script>
-    $('#command-select').change(function() {
-        $('form.command').hide();
-        $('form[data-command="' + $(this).val() + '"]').show();
-    });
+<!-- command actions -->
+<section id="actions" class="system-panel" style="display: none;">
+    <!-- existing actions -->
+    <section id="existing-actions">
+        <% if @system.actions.count > 0 %>
+            <table>
+                <tr>
+                    <th id="command-col">Command</th>
+                    <th id="options-col">Options</th>
+                    <th id="completed-col">Completed</th>
+                    <th id="response-col">Response</th>
+                    <th id="delete-col"></th>
+                </tr>
+                <% @system.actions.each do |action| %>
+                    <tr>
+                        <td><%= action.command_name %></td>
+                        <td><%= action.options %></td>
+                        <td>
+                            <% if action.timestamp %>
+                                <%= Time.at(action.timestamp).ctime %>
+                            <% else %>
+                                PENDING
+                            <% end %>
+                        </td>
+                        <td>
+                            <% if action.timestamp %>
+                                <% unless action.success %>
+                                    <%= clean_arrows(action.response) %>
+                                <% else %>
+                                    <% if action.file %>
+                                        file...
+                                    <% else %>
+                                        Success
+                                    <% end %>
+                                <% end %>
+                            <% end %>
+                        </td>
 
-    $('form.delete').submit(function(event) {
-        if (!confirm('Are you sure you want to delete this action?'))
-            event.preventDefault();
-    });
-</script>
+                        <td>
+                            <form action="/systems/<%= @system.id %>/actions/<%= action.id %>" method="POST" class="delete">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <input type="submit" value="Delete">
+                            </form>
+                        </td>
+                    </tr>
+                <% end %>
+            </table>
+        <% else %>
+            <p>No pending actions</p>
+        <% end %>
+    </section>
 
+    <p id="add-command">
+        Add action:
+        <select id="command-select">
+            <option></option>
+            <optgroup label="Commands">
+                <% command_actions.each do |command| %>
+                    <option value="<%= command.name %>"><%= command.human_name %></option>
+                <% end %>
+            </optgroup>
+            <optgroup label="Scripts">
+                <% @scripts.each do |script| %>
+                    <option value="<%= script.code_name %>"><%= script.name %></option>
+                <% end %>
+            </optgroup>
+        </select>
+    </p>
+
+    <!-- new commands -->
+    <% command_actions.each do |command| %>
+        <%= erb :command_config, locals: {command: command, action: "/systems/#{@system.id}/actions"} %>
+    <% end %>
+    <% @scripts.each do |script| %>
+        <form class="command" data-command="<%= script.code_name %>" style="display: none" method="POST" action="/systems/<%= @system.id %>/actions">
+            <h1><%= script.name %></h1>
+            <p><%= script.description %></p>
+            <input type="hidden" name="script_id" value="<%= script.id %>">
+            <p class="actions"><input type="submit" value="Add"></p>
+        </form>
+    <% end %>
+
+    <script>
+        $('#command-select').change(function() {
+            $('form.command').hide();
+            $('form[data-command="' + $(this).val() + '"]').show();
+        });
+
+        $('form.delete').submit(function(event) {
+            if (!confirm('Are you sure you want to delete this action?'))
+                event.preventDefault();
+        });
+    </script>
+</section>
 
 <!-- metric errors -->
-<% if @errors.length > 0 %>
-    <section id="errors">
-        <h1>Collection Errors</h1>
+<section id="errors" class="system-panel" style="display: none;">
+    <% unless @errors.empty? %>
         <ul>
             <%= erb :errors, locals: {errors: @errors} %>
         </ul>
@@ -153,13 +164,39 @@
                 <input type="submit" value="Clear All Errors">
             </form>
         </div>
-    </section>
-<% end %>
+        <script>
+            $('#see-all').click(function(event) {
+                $('#errors ul').load('/systems/<%= @system.id %>/errors', function() {
+                    $('#see-all').hide();
+                })
+            });
+        </script>
+    <% else %>
+        <p>No errors</p>
+    <% end %>
+</section>
 
 <script>
-    $('#see-all').click(function(event) {
-        $('#errors ul').load('/systems/<%= @system.id %>/errors', function() {
-            $('#see-all').hide();
-        })
+    function selectPanel(hash) {
+        $('.system-panel').hide();
+        $(hash).show();
+        $('#system-nav a').removeClass('selected');
+        $('#system-nav a[href="' + hash + '"]').addClass('selected');
+
+        if (hash == '#metrics') {
+            setTimeout(function() {
+                window.graphs.forEach(function(graph) {
+                    graph.resetZoom();
+                });
+            }, 10);
+        }
+    }
+
+    if (window.location.hash != '')
+        selectPanel(window.location.hash);
+
+    $('#system-nav a').click(function(event) {
+        selectPanel($(this).attr('href'));
     });
 </script>
+
