@@ -25,7 +25,7 @@
 <nav id="system-nav">
     <a href="#metrics" name="metrics" class="selected">Metrics</a>
     <a href="#actions" name="actions">Actions</a>
-    <a href="#errors" name="errors">Errors</a>
+    <a href="#errors" name="errors" <% if @errors.length > 0 %>class="has-errors"<% end %>>Errors</a>
 </nav>
 
 <!-- numeric metric graphs -->
@@ -84,7 +84,7 @@
                                     <%= clean_arrows(action.response) %>
                                 <% else %>
                                     <% if action.file %>
-                                        file...
+                                        <a href="<%= action.file_url %>"><%= action.file_name %></a>
                                     <% else %>
                                         Success
                                     <% end %>

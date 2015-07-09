@@ -436,6 +436,10 @@ article.graph {
     background-color: white;
 }
 
+#system-nav a.has-errors {
+    color: red;
+}
+
 .system-panel {
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
