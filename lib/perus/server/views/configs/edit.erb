@@ -18,7 +18,6 @@
     <%= erb :command_config, locals: {command: metric, action: "/admin/configs/#{@record.id}/metrics"} %>
 <% end %>
 
-<script src="/js/jquery.js"></script>
 <script>
     $('#metric-select').change(function() {
         $('form.command.new').hide();

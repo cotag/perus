@@ -18,7 +18,6 @@
     <%= erb :command_config, locals: {command: command, action: "/admin/scripts/#{@record.id}/commands"} %>
 <% end %>
 
-<script src="/js/jquery.js"></script>
 <script>
     $('#command-select').change(function() {
         $('form.command.new').hide();

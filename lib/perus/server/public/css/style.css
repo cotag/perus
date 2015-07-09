@@ -301,25 +301,33 @@ article.graph {
         padding-bottom: 4px;
     }
 
-        #errors article {
-            margin-bottom: 10px;
+        #errors ul {
+            list-style-type: none;
         }
 
-            #errors article h1 {
-                font-size: 14px;
-                font-weight: 600;
-                margin-bottom: 5px;
-                line-height: 16px;
+            #errors li {
+                margin-bottom: 20px;
             }
 
-            #errors article p {
-                font-size: 14px;
-            }
+                #errors li h1 {
+                    font-size: 14px;
+                    font-weight: 600;
+                    margin-bottom: 3px;
+                    line-height: 16px;
+                }
 
-    #errors form {
+                #errors li p {
+                    font-size: 14px;
+                }
+
+    #errors div {
         text-align: right;
-        margin-top: 10px;
     }
+
+        #errors form {
+            display: inline-block;
+            margin-top: 10px;
+        }
 
 /* alerts */
 .alert {

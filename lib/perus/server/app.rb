@@ -178,6 +178,13 @@ module Perus::Server
             config.to_json
         end
 
+        # render all errors in html to replace the shortened subset on the system page
+        get '/systems/:id/errors' do
+            system = System.with_pk!(params['id'])
+            errors = system.collection_errors
+            erb :errors, layout: false, locals: {errors: errors}
+        end
+
         # clear collection errors
         delete '/systems/:id/errors' do
             system = System.with_pk!(params['id'])
@@ -280,6 +287,8 @@ module Perus::Server
                 @last_updated = 'never updated'
             end
 
+            @errors = @system.collection_errors_dataset.limit(5).all
+            @total_error_count = @system.collection_errors_dataset.count
             @scripts = Script.all
             erb :system
         end

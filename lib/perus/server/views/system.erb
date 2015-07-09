@@ -124,7 +124,6 @@
     <% end %>
 </section>
 
-<script src="/js/jquery.js"></script>
 <script>
     $('#command-select').change(function() {
         $('form.command').hide();
@@ -139,19 +138,28 @@
 
 
 <!-- metric errors -->
-<% if @system.collection_errors.length > 0 %>
+<% if @errors.length > 0 %>
     <section id="errors">
         <h1>Collection Errors</h1>
-        <% @system.collection_errors.each do |error| %>
-            <article>
-                <h1><%= error.module %> - <%= Time.at(error.timestamp).ctime %></h1>
-                <p><%= clean_arrows(error.description) %></p>
-            </article>
-        <% end %>
-        <form action="/systems/<%= @system.id %>/errors" method="POST">
-            <input type="hidden" name="_method" value="DELETE">
-            <input type="submit" value="Clear All Errors">
-        </form>
+        <ul>
+            <%= erb :errors, locals: {errors: @errors} %>
+        </ul>
+        <div>
+            <% if @total_error_count > @errors.length %>
+                <button id="see-all">See All Errors</button>
+            <% end %>
+            <form action="/systems/<%= @system.id %>/errors" method="POST">
+                <input type="hidden" name="_method" value="DELETE">
+                <input type="submit" value="Clear All Errors">
+            </form>
+        </div>
     </section>
 <% end %>
 
+<script>
+    $('#see-all').click(function(event) {
+        $('#errors ul').load('/systems/<%= @system.id %>/errors', function() {
+            $('#see-all').hide();
+        })
+    });
+</script>
