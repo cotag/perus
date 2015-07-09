@@ -91,12 +91,12 @@ main {
     }
 
         /* forms */
-        main > form > p {
+        main > form > p, form.command > p {
             margin-bottom: 10px;
             position: relative;
         }
 
-            main > form > p label {
+            main > form > p label, form.command > p label {
                 position: absolute;
                 top: 3px;
                 left: 0px;
@@ -104,19 +104,20 @@ main {
                 color: #444;
             }
 
-            main > form > p.errors {
+            main > form > p.errors, form.command > p.errors {
                 padding-left: 100px;
                 color: red;
                 font-size: 13px;
             }
 
-            main > form > p span {
+            main > form > p span, form.command > p span {
                 display: inline-block;
                 padding-left: 120px;
                 width: 100%;
             }
 
-            main > form > p input[type=text], main > form > p textarea {
+            main > form > p input[type=text], main > form > p textarea,
+            form.command > p input[type=text], form.command > p textarea {
                 width: 100%;
                 border: 1px solid #ddd;
                 font-size: 13px;
@@ -126,15 +127,16 @@ main {
                 padding: 5px;
             }
 
-            main > form > p input[type=text]:focus, main > form > p textarea:focus {
+            main > form > p input[type=text]:focus, main > form > p textarea:focus,
+            form.command > p input[type=text]:focus, form.command > p textarea:focus {
                 border-color: #3497FF;
             }
 
-            main > form > p textarea {
+            main > form > p textarea, form.command > p textarea {
                 min-height: 80px;
             }
 
-            main > form > p.actions {
+            main > form > p.actions, form.command > p.actions {
                 margin-top: 20px;
                 text-align: right;
                 margin-bottom: 0px;
@@ -446,3 +448,10 @@ article.graph {
 #actions {
     padding-top: 20px;
 }
+
+    #actions form.command {
+        background-color: #fbfbfb;
+        border: 1px solid #eee;
+        padding: 15px 20px;
+        border-radius: 4px;
+    }
