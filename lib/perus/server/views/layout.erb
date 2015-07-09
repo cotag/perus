@@ -4,7 +4,7 @@
         <link rel="stylesheet" type="text/css" href="/css/reset.css">
         <link rel="stylesheet" type="text/css" href="/css/style.css">
         <title>Overview</title>
-        <script src="/js/jquery.js"></script>
+        <script src="<%= url_prefix %>js/jquery.js"></script>
     </head>
     <body>
         <header>
@@ -12,25 +12,25 @@
             <nav>
                 <ul>
                     <li>
-                        <%= nav_item('/', 'Overview', false) %>
+                        <%= nav_item(url_prefix, 'Overview', false) %>
                     </li>
                     <li>
-                        <%= nav_item('/systems', 'Systems', false) %>
+                        <%= nav_item("#{url_prefix}systems", 'Systems', false) %>
                         <ul>
                             <% @groups.each do |group| %>
-                                <%= nav_item("/groups/#{group.id}/systems", group.name) %>
+                                <%= nav_item("#{url_prefix}groups/#{group.id}/systems", group.name) %>
                             <% end %>
                         </ul>
                     </li>
                     <li>
-                        <a href="/admin">Admin</a>
-                        <% if request.path.start_with?('/admin') %>
+                        <a href="<%= url_prefix %>admin">Admin</a>
+                        <% if request.path.start_with?("#{url_prefix}admin") %>
                             <ul>
-                                <%= nav_item('/admin/systems', 'Systems') %>
-                                <%= nav_item('/admin/groups', 'Groups') %>
-                                <%= nav_item('/admin/configs', 'Configs') %>
-                                <%= nav_item('/admin/alerts', 'Alerts') %>
-                                <%= nav_item('/admin/scripts', 'Scripts') %>
+                                <%= nav_item("#{url_prefix}admin/systems", 'Systems') %>
+                                <%= nav_item("#{url_prefix}admin/groups", 'Groups') %>
+                                <%= nav_item("#{url_prefix}admin/configs", 'Configs') %>
+                                <%= nav_item("#{url_prefix}admin/alerts", 'Alerts') %>
+                                <%= nav_item("#{url_prefix}admin/scripts", 'Scripts') %>
                             </ul>
                         <% end %>
                     </li>

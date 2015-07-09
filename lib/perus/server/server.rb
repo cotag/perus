@@ -6,7 +6,8 @@ DEFAULT_SERVER_OPTIONS = {
     'db_path' => './perus.db',
     'listen' => '0.0.0.0',
     'port' => 3000,
-    'site_name' => 'Perus'
+    'site_name' => 'Perus',
+    'url_prefix' => '/'
 }
 
 module Perus::Server

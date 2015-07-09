@@ -1,5 +1,5 @@
 <h1>New <%= @title %></h1>
-<form action="/admin/<%= @plural %>" method="post">
+<form action="<%= url_prefix %>admin/<%= @plural %>" method="post">
     <%= erb :"#{@plural}/form" %>
     <p class="actions"><input type="submit" value="Save"></p>
 </form>

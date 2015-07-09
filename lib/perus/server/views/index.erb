@@ -12,7 +12,7 @@
             <% else %>
                 <ul>
                     <% systems.each do |system| %>
-                        <li><a href="/systems/<%= system.id %>"><%= system.name %></a></li>
+                        <li><a href="<%= url_prefix %>systems/<%= system.id %>"><%= system.name %></a></li>
                     <% end %>
                 </ul>
             <% end %>

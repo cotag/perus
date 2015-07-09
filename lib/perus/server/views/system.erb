@@ -30,7 +30,7 @@
 
 <!-- numeric metric graphs -->
 <section id="metrics" class="system-panel">
-    <script src="/js/dygraph-combined.js"></script>
+    <script src="<%= url_prefix %>js/dygraph-combined.js"></script>
     <script>
         window.graphs = [];
     </script>
@@ -42,7 +42,7 @@
             <script type="text/javascript">
                 var graph = new Dygraph(
                     document.getElementById("metric-<%= name %>"),
-                    "/systems/<%= @system.id %>/values?metrics=<%= metrics.join(',') %>",
+                    "<%= url_prefix %>systems/<%= @system.id %>/values?metrics=<%= metrics.join(',') %>",
                     {
                         labelsSeparateLines: true
                     }
@@ -93,7 +93,7 @@
                         </td>
 
                         <td>
-                            <form action="/systems/<%= @system.id %>/actions/<%= action.id %>" method="POST" class="delete">
+                            <form action="<%= url_prefix %>systems/<%= @system.id %>/actions/<%= action.id %>" method="POST" class="delete">
                                 <input type="hidden" name="_method" value="DELETE">
                                 <input type="submit" value="Delete">
                             </form>
@@ -125,10 +125,10 @@
 
     <!-- new commands -->
     <% command_actions.each do |command| %>
-        <%= erb :command_config, locals: {command: command, action: "/systems/#{@system.id}/actions"} %>
+        <%= erb :command_config, locals: {command: command, action: "#{url_prefix}systems/#{@system.id}/actions"} %>
     <% end %>
     <% @scripts.each do |script| %>
-        <form class="command" data-command="<%= script.code_name %>" style="display: none" method="POST" action="/systems/<%= @system.id %>/actions">
+        <form class="command" data-command="<%= script.code_name %>" style="display: none" method="POST" action="<%= url_prefix %>systems/<%= @system.id %>/actions">
             <h1><%= script.name %></h1>
             <p><%= script.description %></p>
             <input type="hidden" name="script_id" value="<%= script.id %>">
@@ -159,14 +159,14 @@
             <% if @total_error_count > @errors.length %>
                 <button id="see-all">See All Errors</button>
             <% end %>
-            <form action="/systems/<%= @system.id %>/errors" method="POST">
+            <form action="<%= url_prefix %>systems/<%= @system.id %>/errors" method="POST">
                 <input type="hidden" name="_method" value="DELETE">
                 <input type="submit" value="Clear All Errors">
             </form>
         </div>
         <script>
             $('#see-all').click(function(event) {
-                $('#errors ul').load('/systems/<%= @system.id %>/errors', function() {
+                $('#errors ul').load('<%= url_prefix %>systems/<%= @system.id %>/errors', function() {
                     $('#see-all').hide();
                 })
             });

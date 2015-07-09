@@ -1,7 +1,7 @@
 <h2 class="edit">Metrics</h2>
 
 <% @record.config_metrics.each do |config_metric| %>
-    <%= erb :command_config, locals: {command: config_metric.command_config.command_class, action: "/admin/configs/#{@record.id}/metrics/#{config_metric.id}", command_options: config_metric.command_config.options} %>
+    <%= erb :command_config, locals: {command: config_metric.command_config.command_class, action: "#{url_prefix}admin/configs/#{@record.id}/metrics/#{config_metric.id}", command_options: config_metric.command_config.options} %>
 <% end %>
 
 <p id="add-command">
@@ -15,7 +15,7 @@
 </p>
 
 <% command_metrics.each do |metric| %>
-    <%= erb :command_config, locals: {command: metric, action: "/admin/configs/#{@record.id}/metrics"} %>
+    <%= erb :command_config, locals: {command: metric, action: "#{url_prefix}admin/configs/#{@record.id}/metrics"} %>
 <% end %>
 
 <script>

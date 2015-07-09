@@ -28,5 +28,9 @@ module Perus::Server
         def clean_arrows(text)
             text.gsub('<', '&lt;').gsub('>', '&gt;')
         end
+
+        def url_prefix
+            Server.options.url_prefix
+        end
     end
 end

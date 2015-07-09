@@ -5,8 +5,8 @@
         <table>
             <% @records.each do |record| %>
                 <tr>
-                    <td><a href="/admin/<%= @plural %>/<%= record.id %>"><%= record.name %></a></td>
-                    <td><a href="/admin/<%= @plural %>/<%= record.id %>">Delete</a></td>
+                    <td><a href="<%= url_prefix %>admin/<%= @plural %>/<%= record.id %>"><%= record.name %></a></td>
+                    <td><a href="<%= url_prefix %>admin/<%= @plural %>/<%= record.id %>">Delete</a></td>
                 </tr>
             <% end %>
         </table>
@@ -15,4 +15,4 @@
     <% end %>
 </section>
 
-<p class="actions"><a href="/admin/<%= @plural %>/new">New <%= @title.downcase %></a></p>
+<p class="actions"><a href="<%= url_prefix %>admin/<%= @plural %>/new">New <%= @title.downcase %></a></p>

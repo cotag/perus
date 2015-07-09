@@ -4,7 +4,7 @@
     <% @systems.each do |(orientation, systems)| %>
         <div class="<%= orientation %> systems">
             <% systems.each do |system| %>
-                <a href="/systems/<%= system.id %>">
+                <a href="<%= url_prefix %>systems/<%= system.id %>">
                     <div class="screenshot" style="background-image: url(<%= system.screenshot_url %>)"></div>
                     <h1><%= system.name %></h1>
                     <p><%= system.logical_name %> - <%= system.ip || 'unknown IP' %></p>

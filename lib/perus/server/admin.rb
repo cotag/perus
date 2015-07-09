@@ -36,9 +36,9 @@ module Perus::Server
                             begin
                                 @record.save
                                 if #{redirect_to_record}
-                                    redirect '/admin/#{plural}/' + @record.id.to_s
+                                    redirect url_prefix + 'admin/#{plural}/' + @record.id.to_s
                                 else
-                                    redirect '/admin/#{plural}'
+                                    redirect url_prefix + 'admin/#{plural}'
                                 end
                             rescue
                             end
@@ -61,7 +61,7 @@ module Perus::Server
                         if @record.valid?
                             begin
                                 @record.update(params[:record])
-                                redirect '/admin/#{plural}'
+                                redirect url_prefix + 'admin/#{plural}'
                             rescue
                             end
                         end
@@ -74,7 +74,7 @@ module Perus::Server
                     delete '/admin/#{plural}/:id' do
                         @record = #{klass}.with_pk!(params['id'])
                         @record.destroy
-                        redirect '/admin/#{plural}'
+                        redirect url_prefix + 'admin/#{plural}'
                     end
                 }
             "

@@ -1,6 +1,6 @@
 <h1><%= @title %>: <%= @record.name %></h1>
 
-<form action="/admin/<%= @plural %>/<%= @record.id %>" method="post">
+<form action="<%= url_prefix %>admin/<%= @plural %>/<%= @record.id %>" method="post">
     <input type="hidden" name="_method" value="put">
     <%= erb :"#{@plural}/form" %>
     <p class="actions"><input type="submit" value="Save"></p>

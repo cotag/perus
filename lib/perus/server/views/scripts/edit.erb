@@ -1,7 +1,7 @@
 <h2 class="edit">Commands</h2>
 
 <% @record.script_commands.each do |script_command| %>
-    <%= erb :command_config, locals: {command: script_command.command_config.command_class, action: "/admin/scripts/#{@record.id}/commands/#{script_command.id}", command_options: script_command.command_config.options} %>
+    <%= erb :command_config, locals: {command: script_command.command_config.command_class, action: "#{url_prefix}admin/scripts/#{@record.id}/commands/#{script_command.id}", command_options: script_command.command_config.options} %>
 <% end %>
 
 <p id="add-command">
@@ -15,7 +15,7 @@
 </p>
 
 <% command_actions.each do |command| %>
-    <%= erb :command_config, locals: {command: command, action: "/admin/scripts/#{@record.id}/commands"} %>
+    <%= erb :command_config, locals: {command: command, action: "#{url_prefix}admin/scripts/#{@record.id}/commands"} %>
 <% end %>
 
 <script>

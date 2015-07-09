@@ -59,7 +59,7 @@ module Perus::Server
                 end
             end
 
-            redirect "/admin/scripts/#{params['id']}"
+            redirect "#{url_prefix}admin/scripts/#{params['id']}"
         end
 
         post '/admin/scripts/:script_id/commands/:id' do
@@ -70,7 +70,7 @@ module Perus::Server
                 script_command.command_config.update_options!(params)
             end
 
-            redirect "/admin/scripts/#{params['script_id']}"
+            redirect "#{url_prefix}admin/scripts/#{params['script_id']}"
         end
 
         post '/admin/configs/:id/metrics' do
@@ -90,7 +90,7 @@ module Perus::Server
                 end
             end
 
-            redirect "/admin/configs/#{params['id']}"
+            redirect "#{url_prefix}admin/configs/#{params['id']}"
         end
 
         post '/admin/configs/:config_id/metrics/:id' do
@@ -101,7 +101,7 @@ module Perus::Server
                 config_metric.command_config.update_options!(params)
             end
 
-            redirect "/admin/configs/#{params['config_id']}"
+            redirect "#{url_prefix}admin/configs/#{params['config_id']}"
         end
 
 
@@ -189,7 +189,7 @@ module Perus::Server
         delete '/systems/:id/errors' do
             system = System.with_pk!(params['id'])
             system.collection_errors.each(&:delete)
-            redirect "/systems/#{system.id}"
+            redirect "#{url_prefix}systems/#{system.id}"
         end
 
         # create a new action
@@ -212,14 +212,14 @@ module Perus::Server
                 end
             end
 
-            redirect "/systems/#{params['id']}#actions"
+            redirect "#{url_prefix}systems/#{params['id']}#actions"
         end
 
         # delete an action. deletion also clears any uploaded files.
         delete '/systems/:system_id/actions/:id' do
             action = Action.with_pk!(params['id'])
             action.destroy
-            redirect "/systems/#{params['system_id']}"
+            redirect "#{url_prefix}systems/#{params['system_id']}#actions"
         end
 
 
