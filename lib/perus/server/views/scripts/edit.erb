@@ -23,4 +23,14 @@
         $('form.command.new').hide();
         $('form.command.new[data-command="' + $(this).val() + '"]').show();
     });
+
+    $('form.command').submit(function(event) {
+        // there are three possible submit buttons in a form: Delete, Update and Add
+        var submitAction = $(this).find("input[type=submit]:focus").val();
+
+        if (submitAction == 'Delete') {
+            if (!confirm('Are you sure you want to delete this action?'))
+                event.preventDefault();
+        }
+    });
 </script>
