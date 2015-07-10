@@ -1,5 +1,7 @@
 module Perus::Server
     class Form
+        include Helpers
+
         def initialize(record)
             @record = record
         end
@@ -33,7 +35,8 @@ module Perus::Server
         end
 
         def input(field, options)
-            "<input type=\"text\" name=\"record[#{field}]\" value=\"#{@record.send(field)}\">"
+            value = escape_quotes(@record.send(field))
+            "<input type=\"text\" name=\"record[#{field}]\" value=\"#{value}\">"
         end
 
         def textarea(field, options)
@@ -56,7 +59,7 @@ module Perus::Server
             existing = @record.send(field)
             option_rows = options.collect do |(value, name)|
                 selected = existing == value ? 'selected' : ''
-                "<option value=\"#{value}\" #{selected}>#{name || value}</option>"
+                "<option value=\"#{escape_quotes(value)}\" #{selected}>#{name || value}</option>"
             end
 
             "<select name=\"record[#{field}]\">#{option_rows.join("\n")}</select>"

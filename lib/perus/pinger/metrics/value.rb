@@ -10,7 +10,7 @@ module Perus::Pinger
         metric!
         
         def run
-            line = `cat #{options.path} | grep #{options.grep}`
+            line = `cat #{options.path} | egrep #{options.grep}`
             value = line.match(Regexp.compile(options.match))[1]
             {options.name => value}
         end

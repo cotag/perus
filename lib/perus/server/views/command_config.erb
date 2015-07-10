@@ -19,7 +19,7 @@
                             <% end %>
                         </select>
                     <% else %>
-                        <input type="text" name="options[<%= option.name %>]" placeholder="<%= option.default %>" value="<%= command_options[option.name.to_s] if defined?(command_options) %>">
+                        <input type="text" name="options[<%= option.name %>]" placeholder="<%= option.default %>" value="<%= escape_quotes(command_options[option.name.to_s]) if defined?(command_options) %>">
                     <% end %>
                 </span>
             </p>

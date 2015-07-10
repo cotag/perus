@@ -39,6 +39,10 @@ module Perus::Server
             text.gsub('<', '&lt;').gsub('>', '&gt;')
         end
 
+        def escape_quotes(text)
+            text.to_s.gsub('"', '&quot;')
+        end
+
         def url_prefix
             Server.options.url_prefix
         end
