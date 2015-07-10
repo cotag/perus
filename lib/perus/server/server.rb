@@ -1,13 +1,15 @@
 require 'thin'
 
 DEFAULT_SERVER_OPTIONS = {
-    'uploads_dir' => './uploads',
-    'uploads_url' => 'http://localhost:3000/uploads/',
-    'db_path' => './perus.db',
-    'listen' => '0.0.0.0',
-    'port' => 3000,
-    'site_name' => 'Perus',
-    'url_prefix' => '/'
+    '__anonymous__' => {
+        'uploads_dir' => './uploads',
+        'uploads_url' => 'http://localhost:3000/uploads/',
+        'db_path' => './perus.db',
+        'listen' => '0.0.0.0',
+        'port' => 3000,
+        'site_name' => 'Perus',
+        'url_prefix' => '/'
+    }
 }
 
 module Perus::Server
