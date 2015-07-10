@@ -51,8 +51,8 @@ module Perus::Pinger
 
             # cache urls on initialisation since the urls depend on values known
             # at startup and that won't change over the object lifetime
-            config_path = URI("/systems/#{Pinger.options.system_id}/config")
-            pinger_path = URI("/systems/#{Pinger.options.system_id}/ping")
+            config_path = URI("systems/#{Pinger.options.system_id}/config")
+            pinger_path = URI("systems/#{Pinger.options.system_id}/ping")
             server_uri  = URI(Pinger.options.server)
 
             @config_url = (server_uri + config_path).to_s
