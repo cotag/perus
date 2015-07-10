@@ -14,6 +14,7 @@ module Perus
             require './pinger/commands/upload'
             require './pinger/commands/upgrade'
             require './pinger/commands/script'
+            require './pinger/commands/sleep'
 
             # metrics
             require './pinger/metrics/chrome'
