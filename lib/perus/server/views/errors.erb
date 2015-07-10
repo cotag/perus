@@ -1,6 +1,6 @@
 <% errors.each do |error| %>
     <li>
         <h1><%= error.module %> - <%= Time.at(error.timestamp).ctime %></h1>
-        <p><%= clean_arrows(error.description) %></p>
+        <p><%= clean_arrows(error.description).gsub("\n", "<br>") %></p>
     </li>
 <% end %>

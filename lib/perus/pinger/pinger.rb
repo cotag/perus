@@ -92,10 +92,10 @@ module Perus::Pinger
                         @metric_errors[metric.name] ||= []
                         @metrics << metric.new(config['options'])
                     else
-                        @metric_errors[config['type']] = e.inspect
+                        @metric_errors[config['type']] = format_exception(e)
                     end
                 rescue => e
-                    @metric_errors[metric.name] << e.inspect
+                    @metric_errors[metric.name] << format_exception(e)
                 end
             end
 
@@ -105,7 +105,7 @@ module Perus::Pinger
                     @actions << command.new(config['options'], config['id'])
                 rescue => e
                     if config['id']
-                        @action_results[config['id']] = e.inspect
+                        @action_results[config['id']] = format_exception(e)
                     else
                         puts 'Error - action does not have an associated id'
                         p config
@@ -117,13 +117,21 @@ module Perus::Pinger
         #----------------------
         # run
         #----------------------
+        def format_exception(e)
+            if e.backtrace.empty?
+                e.inspect
+            else
+                "#{e.inspect}\n#{e.backtrace.first}"
+            end
+        end
+
         def run_metrics
             @metrics.each do |metric|
                 begin
                     result = metric.run
                     @metric_results.merge!(result)
                 rescue => e
-                    @metric_errors[metric.class.name] << e.inspect
+                    @metric_errors[metric.class.name] << format_exception(e)
                 end
             end
         end
@@ -141,7 +149,7 @@ module Perus::Pinger
                     @action_results[action.id] = result
 
                 rescue => e
-                    @action_results[action.id] = e.inspect
+                    @action_results[action.id] = format_exception(e)
                 end
             end
         end
@@ -179,7 +187,7 @@ module Perus::Pinger
                 RestClient.post(@pinger_url, payload)
             rescue => e
                 puts 'Ping failed with exception'
-                puts e.inspect
+                puts format_exception(e)
             end
         end
 
@@ -192,7 +200,7 @@ module Perus::Pinger
                     metric.cleanup
                 rescue => e
                     puts 'Error running metric cleanup'
-                    puts e.inspect
+                    puts format_exception(e)
                 end
             end
 
@@ -201,7 +209,7 @@ module Perus::Pinger
                     action.cleanup
                 rescue => e
                     puts 'Error running action cleanup'
-                    puts e.inspect
+                    puts format_exception(e)
                 end
             end
 
@@ -210,7 +218,7 @@ module Perus::Pinger
                     code.call
                 rescue => e
                     puts 'Error running late action'
-                    puts e.inspect
+                    puts format_exception(e)
                 end
             end
         end
