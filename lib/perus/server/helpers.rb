@@ -6,11 +6,21 @@ module Perus::Server
         end
 
         def nav_item(path, name, li = true)
-            if path.start_with?('/admin/')
-                klass = request.path_info.start_with?(path) ? 'selected' : ''
-            else
-                klass = request.path_info == path ? 'selected' : ''
+            # when hosted behind a fronting server such as nginx, path_info
+            # will start with '/' not url_prefix
+            adjusted_path = path
+            if path.index(url_prefix) == 0
+                adjusted_path = path.sub(url_prefix, '/')
             end
+
+            # admin links are highlighted for sub pages as well as their own
+            # top level page. e.g 'groups' matches '/groups/1'
+            if adjusted_path.start_with?('/admin/')
+                klass = request.path_info.start_with?(adjusted_path) ? 'selected' : ''
+            else
+                klass = request.path_info == adjusted_path ? 'selected' : ''
+            end
+
             anchor = "<a class=\"#{klass}\" href=\"#{path}\">#{name}</a>"
             li ? "<li>#{anchor}</li>" : anchor
         end

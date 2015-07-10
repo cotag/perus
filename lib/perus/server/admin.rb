@@ -40,6 +40,7 @@ module Perus::Server
                                 else
                                     redirect url_prefix + 'admin/#{plural}'
                                 end
+                                return
                             rescue
                             end
                         end
@@ -62,6 +63,7 @@ module Perus::Server
                             begin
                                 @record.update(params[:record])
                                 redirect url_prefix + 'admin/#{plural}'
+                                return
                             rescue
                             end
                         end

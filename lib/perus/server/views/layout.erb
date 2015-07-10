@@ -1,8 +1,8 @@
 <html>
     <head>
-        <link rel="stylesheet" type="text/css" href="/fonts/opensans/stylesheet.css">
-        <link rel="stylesheet" type="text/css" href="/css/reset.css">
-        <link rel="stylesheet" type="text/css" href="/css/style.css">
+        <link rel="stylesheet" type="text/css" href="<%= url_prefix %>fonts/opensans/stylesheet.css">
+        <link rel="stylesheet" type="text/css" href="<%= url_prefix %>css/reset.css">
+        <link rel="stylesheet" type="text/css" href="<%= url_prefix %>css/style.css">
         <title>Overview</title>
         <script src="<%= url_prefix %>js/jquery.js"></script>
     </head>
@@ -24,7 +24,7 @@
                     </li>
                     <li>
                         <a href="<%= url_prefix %>admin">Admin</a>
-                        <% if request.path.start_with?("#{url_prefix}admin") %>
+                        <% if request.path.start_with?('/admin') %>
                             <ul>
                                 <%= nav_item("#{url_prefix}admin/systems", 'Systems') %>
                                 <%= nav_item("#{url_prefix}admin/groups", 'Groups') %>

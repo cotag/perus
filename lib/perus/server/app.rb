@@ -39,7 +39,7 @@ module Perus::Server
 
         # static admin index page
         get '/admin' do
-            redirect '/admin/systems'
+            redirect "#{url_prefix}admin/systems"
         end
 
         post '/admin/scripts/:id/commands' do
