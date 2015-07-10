@@ -14,8 +14,9 @@ DEFAULT_SERVER_OPTIONS = {
 
 module Perus::Server
     class Server
-        def initialize(options_path = DEFAULT_SERVER_OPTIONS_PATH)
+        def initialize(options_path = DEFAULT_SERVER_OPTIONS_PATH, environment = 'development')
             self.class.options.load(options_path, DEFAULT_SERVER_OPTIONS)
+            ENV['RACK_ENV'] = environment
             DB.start
         end
 

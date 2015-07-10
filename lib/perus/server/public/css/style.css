@@ -252,14 +252,21 @@ main {
     #meta img {
         display: inline-block;
         vertical-align: top;
-        width: 450px;
         margin-right: 30px;
+    }
+
+    #meta.portrait img, #meta.other img {
+        width: 250px;
+    }
+
+    #meta.landscape img {
+        width: 450px;
     }
 
     #meta dl {
         display: inline-block;
         vertical-align: top;
-        width: 300px;
+        width: 500px;
     }
 
         #meta dt, #meta dd {
@@ -275,7 +282,7 @@ main {
         }
 
         #meta dd {
-            width: 190px;
+            width: 390px;
             line-height: 16px;
         }
 

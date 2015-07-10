@@ -1,6 +1,6 @@
 <h1>System: <%= @system.name %></h1>
 
-<section id="meta">
+<section id="meta" class="<%= @system.orientation.downcase %>">
     <img src="<%= @uploads['screenshot'] %>">
     <dl>
         <% unless @system.logical_name.empty? %>
