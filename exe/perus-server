@@ -5,14 +5,14 @@ require 'optparse'
 options_path = Perus::Server::DEFAULT_SERVER_OPTIONS_PATH
 environment = 'development'
 
-ARGV.options do |opts|
+OptionParser.new do |opts|
     opts.banner = "Usage: perus-server [options]"
 
-    opts.on('-c', '--config', String, "Path to config file (default: #{Perus::Server::DEFAULT_SERVER_OPTIONS_PATH})") do |c|
+    opts.on('-c', '--config PATH', "Path to config file (default: #{Perus::Server::DEFAULT_SERVER_OPTIONS_PATH})") do |c|
         options_path = c
     end
 
-    opts.on('-e', '--env', String, "Environment (values: development (default), production)") do |e|
+    opts.on('-e', '--env ENV', "Environment (values: development (default), production)") do |e|
         environment = e
 
         unless %w{development production}.include?(e)
@@ -25,9 +25,7 @@ ARGV.options do |opts|
         puts opts
         exit
     end
-
-    opts.parse!
-end
+end.parse!
 
 server = Perus::Server::Server.new(options_path, environment)
 server.run

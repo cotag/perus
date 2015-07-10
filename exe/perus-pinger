@@ -4,10 +4,10 @@ require 'optparse'
 
 options_path = Perus::Pinger::DEFAULT_PINGER_OPTIONS_PATH
 
-ARGV.options do |opts|
+OptionParser.new do |opts|
     opts.banner = "Usage: perus-pinger [options]"
 
-    opts.on('-c', '--config', String, "Path to config file (default: #{Perus::Pinger::DEFAULT_PINGER_OPTIONS_PATH})") do |c|
+    opts.on('-c', '--config PATH', "Path to config file (default: #{Perus::Pinger::DEFAULT_PINGER_OPTIONS_PATH})") do |c|
         options_path = c
     end
 
@@ -15,9 +15,7 @@ ARGV.options do |opts|
         puts opts
         exit
     end
-
-    opts.parse!
-end
+end.parse!
 
 pinger = Perus::Pinger::Pinger.new(options_path)
 pinger.run
