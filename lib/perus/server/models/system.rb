@@ -18,6 +18,19 @@ module Perus::Server
             validates_unique    :name
         end
 
+        def after_destroy
+            super
+
+            # remove dependent records
+            metrics.each(&:destroy)
+            values.each(&:destroy)
+            actions.each(&:destroy)
+            collection_errors.each(&:destroy)
+
+            # remove any uploaded files
+            FileUtils.rm_rf([uploads_dir], secure: true)
+        end
+
         def pending_actions
             actions_dataset.where(timestamp: nil).all
         end
