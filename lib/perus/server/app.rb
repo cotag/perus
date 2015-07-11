@@ -147,7 +147,12 @@ module Perus::Server
             # update the system with its last known ip and update time
             system = System.with_pk!(params['id'])
             system.last_updated = timestamp
-            system.ip = request.ip
+
+            if request.ip == '127.0.0.1'
+                system.ip = request.env['HTTP_X_FORWARDED_FOR']
+            else
+                system.ip = request.ip
+            end
 
             # errors is either nil or a hash of the format - module: [err, ...]
             system.save_metric_errors(params, timestamp)
