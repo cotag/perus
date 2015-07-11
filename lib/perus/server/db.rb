@@ -4,6 +4,7 @@ require 'sequel/plugins/serialization'
 module Perus::Server
     module DB
         def self.start
+            puts 'Loading database'
             Sequel.extension :migration
             Sequel.extension :inflector
 

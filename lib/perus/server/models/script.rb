@@ -2,6 +2,7 @@ module Perus::Server
     class Script < Sequel::Model
         plugin :validation_helpers
         one_to_many :script_commands, order: 'name asc'
+        one_to_many :actions
 
         def code_name
             name.gsub(' ', '_').camelize
@@ -23,6 +24,10 @@ module Perus::Server
             else
                 script_commands.last.order
             end
+        end
+
+        def can_delete?
+            actions_dataset.empty?
         end
 
         def validate

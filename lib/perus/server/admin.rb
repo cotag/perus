@@ -11,6 +11,7 @@ module Perus::Server
                     helpers Helpers
 
                     before do
+                        @singular = '#{singular}'
                         @plural = '#{plural}'
                         @title = '#{title}'
                         load_site_information

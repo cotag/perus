@@ -7,6 +7,21 @@ end
 
 if ARGV[0] == 'server'
     Perus::Server::Server.new.run
+
 elsif ARGV[0] == 'pinger'
     Perus::Pinger::Pinger.new.run
+
+elsif ARGV[0] == 'console'
+    require 'irb'
+
+    # start in the Server namespace
+    include Perus::Server
+
+    # console is used to access the database. initialise a server to load
+    # default settings and start the database connection.
+    Server.new
+
+    # remove the arg otherwise irb will try to load a file named 'console'
+    ARGV.shift
+    IRB.start
 end

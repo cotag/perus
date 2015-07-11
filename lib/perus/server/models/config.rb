@@ -16,6 +16,10 @@ module Perus::Server
             end
         end
 
+        def can_delete?
+            systems_dataset.empty?
+        end
+
         def validate
             super
             validates_presence  :name

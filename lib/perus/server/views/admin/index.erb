@@ -5,8 +5,17 @@
         <table>
             <% @records.each do |record| %>
                 <tr>
-                    <td><a href="<%= url_prefix %>admin/<%= @plural %>/<%= record.id %>"><%= record.name %></a></td>
-                    <td><a href="<%= url_prefix %>admin/<%= @plural %>/<%= record.id %>">Delete</a></td>
+                    <td>
+                        <a href="<%= url_prefix %>admin/<%= @plural %>/<%= record.id %>"><%= record.name %></a>
+                    </td>
+                    <td>
+                        <% if !record.respond_to?(:can_delete?) || record.can_delete? %>
+                            <form class="delete-row" action="<%= url_prefix %>admin/<%= @plural %>/<%= record.id %>" method="POST">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <input type="submit" value="Delete">
+                            </form>
+                        <% end %>
+                    </td>
                 </tr>
             <% end %>
         </table>
@@ -16,3 +25,10 @@
 </section>
 
 <p class="actions"><a href="<%= url_prefix %>admin/<%= @plural %>/new">New <%= @title.downcase %></a></p>
+
+<script>
+    $('form.delete-row').submit(function(event) {
+        if (!confirm('Are you sure you want to delete this <%= @singular %>?'))
+            event.preventDefault();
+    });
+</script>
