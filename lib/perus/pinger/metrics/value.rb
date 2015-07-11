@@ -12,7 +12,7 @@ module Perus::Pinger
         def run
             grep = options.grep.gsub('"', '\\"')
             line = shell(%Q[cat #{options.path} | egrep "#{grep}"])
-            value = line.match(Regexp.compile(options.match))[1]
+            value = line.match(Regexp.compile(options.grep))[1]
             {options.name => value}
         end
     end
