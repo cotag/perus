@@ -1,4 +1,5 @@
 require 'ostruct'
+require 'open3'
 
 module Perus::Pinger
     class Option
@@ -118,6 +119,20 @@ module Perus::Pinger
         def cleanup
             # called after sending data to server. remove temporary
             # files etc.
+        end
+
+        # helper function to run shell commands and return early if anything
+        # is written to stderr or the command didn't run successfully
+        class ShellCommandError < StandardError; end
+        def shell(command)
+            out, err, status = Open3.capture3(command)
+            raise ShellCommandError.new(err.strip) unless err.empty?
+            raise ShellCommandError.new(out.strip) if status.exitstatus > 0
+            out
+        end
+
+        def darwin?
+            shell('uname -s').strip == 'Darwin'
         end
     end
 end

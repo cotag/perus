@@ -7,7 +7,7 @@ module Perus::Pinger
         
         def run
             regex = "/^#{options.drive.gsub("/", "\\/")}/"
-            percent = `df -h / | awk '#{regex} {print $5}'`
+            percent = shell("df -h / | awk '#{regex} {print $5}'")
             {hd_used: percent.to_i}
         end
     end

@@ -5,9 +5,9 @@ module Perus::Pinger
 
         def run
             if options.sudo
-                result = `sudo gem upgrade perus`
+                result = shell('sudo gem upgrade perus')
             else
-                result = `gem upgrade perus`
+                result = shell('gem upgrade perus')
             end
 
             result.include?('ERROR') ? result : true

@@ -4,7 +4,7 @@ module Perus::Pinger
         metric!
         
         def run
-            {uptime: `uptime`.strip}
+            {uptime: shell('uptime').strip}
         end
     end
 end

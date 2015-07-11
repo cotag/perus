@@ -6,8 +6,8 @@ module Perus::Pinger
         option :signal, default: 'KILL'
 
         def run
-            result = `killall -#{option.signal} #{option.process_name}`
-            result.include?('no process found') ? result : true
+            result = shell('killall -#{option.signal} #{option.process_name}')
+            true # shell will capture any errors
         end
     end
 end

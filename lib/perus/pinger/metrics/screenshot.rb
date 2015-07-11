@@ -9,19 +9,19 @@ module Perus::Pinger
         metric!
 
         def run
-            if `uname -s`.strip == 'Darwin'
+            if darwin?
                 if options.resize[-1] != '%'
                     raise 'Non percent resize option unsupported by OS X currently'
                 else
                     percent = options.resize.to_f / 100
                 end
 
-                `screencapture -m -t jpg -x #{options.path}`
-                width  = `sips -g pixelWidth #{options.path}`.match(/pixelWidth: (\d+)/)[1]
-                height = `sips -g pixelHeight #{options.path}`.match(/pixelHeight: (\d+)/)[1]
-                `sips -z #{height.to_i * percent} #{width.to_i * percent} #{options.path}`
+                shell('screencapture -m -t jpg -x #{options.path}')
+                width  = shell('sips -g pixelWidth #{options.path}').match(/pixelWidth: (\d+)/)[1]
+                height = shell('sips -g pixelHeight #{options.path}').match(/pixelHeight: (\d+)/)[1]
+                shell('sips -z #{height.to_i * percent} #{width.to_i * percent} #{options.path}')
             else
-                `export DISPLAY=:0; import -window root -resize #{options.resize} #{options.path}`
+                shell('export DISPLAY=:0; import -window root -resize #{options.resize} #{options.path}')
             end
 
             @screenshot_file = File.new(options.path)
