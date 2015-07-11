@@ -1,5 +1,4 @@
 require 'sinatra/base'
-require 'sinatra/synchrony'
 require 'sinatra/reloader'
 require 'sequel'
 require 'json'
@@ -10,7 +9,6 @@ module Perus::Server
         #----------------------
         # config
         #----------------------
-        register Sinatra::Synchrony
         helpers Helpers
 
         configure do
