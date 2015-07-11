@@ -10,8 +10,8 @@ module Perus::Pinger
         metric!
         
         def run
-            grep = optipns.grep.gsub('"', '\\"')
-            line = shell(%q[cat #{options.path} | egrep "#{grep}"])
+            grep = options.grep.gsub('"', '\\"')
+            line = shell(%Q[cat #{options.path} | egrep "#{grep}"])
             value = line.match(Regexp.compile(options.match))[1]
             {options.name => value}
         end

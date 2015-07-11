@@ -4,7 +4,7 @@ module Perus::Pinger
         metric!
 
         def run
-            percent = shell(%q[cat /proc/meminfo | awk '{if ($1=="MemTotal:") total = $2; if ($1 == "MemFree:") free = $2;} END {print (1 - (free / total))*100}'])
+            percent = shell(%Q[cat /proc/meminfo | awk '{if ($1=="MemTotal:") total = $2; if ($1 == "MemFree:") free = $2;} END {print (1 - (free / total))*100}'])
             {mem_all: percent.to_f}
         end
     end
