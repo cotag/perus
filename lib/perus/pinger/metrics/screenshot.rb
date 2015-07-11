@@ -16,12 +16,15 @@ module Perus::Pinger
                     percent = options.resize.to_f / 100
                 end
 
-                shell('screencapture -m -t jpg -x #{options.path}')
-                width  = shell('sips -g pixelWidth #{options.path}').match(/pixelWidth: (\d+)/)[1]
-                height = shell('sips -g pixelHeight #{options.path}').match(/pixelHeight: (\d+)/)[1]
-                shell('sips -z #{height.to_i * percent} #{width.to_i * percent} #{options.path}')
+                shell("screencapture -m -t jpg -x #{options.path}")
+                width  = shell("sips -g pixelWidth #{options.path}").match(/pixelWidth: (\d+)/)[1]
+                height = shell("sips -g pixelHeight #{options.path}").match(/pixelHeight: (\d+)/)[1]
+
+                # sips helpfully prints data to stderr, so it's run with
+                # backticks to avoid thowing an exception on success
+                `sips -z #{height.to_i * percent} #{width.to_i * percent} #{options.path}`
             else
-                shell('export DISPLAY=:0; import -window root -resize #{options.resize} #{options.path}')
+                shell("export DISPLAY=:0; import -window root -resize #{options.resize} #{options.path}")
             end
 
             @screenshot_file = File.new(options.path)
@@ -29,7 +32,10 @@ module Perus::Pinger
         end
 
         def cleanup
-            @screenshot_file.close unless @screenshot_file.closed?
+            unless @screenshot_file.nil? || @screenshot_file.closed?
+                @screenshot_file.close
+            end
+
             File.delete(options.path)
         end
     end

@@ -11,7 +11,7 @@ module Perus::Pinger
         
         def run
             grep = optipns.grep.gsub('"', '\\"')
-            line = shell('cat #{options.path} | egrep "#{grep}"')
+            line = shell(%q[cat #{options.path} | egrep "#{grep}"])
             value = line.match(Regexp.compile(options.match))[1]
             {options.name => value}
         end

@@ -8,7 +8,8 @@ DEFAULT_SERVER_OPTIONS = {
         'listen' => '0.0.0.0',
         'port' => 3000,
         'site_name' => 'Perus',
-        'url_prefix' => '/'
+        'url_prefix' => '/',
+        'keep_hours' => 24
     }
 }
 

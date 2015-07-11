@@ -24,6 +24,19 @@ module Perus::Server
             (prefix + path).to_s
         end
 
+        def path
+            File.join(system.uploads_dir, file['filename'])
+        end
+
+        def values_dataset
+            system.values_dataset.where(metric: name)
+        end
+
+        def after_destroy
+            super
+            File.unlink(path) if file && File.exists?(path)
+        end
+
         def self.add(name, system_id, type, file_data = nil)
             existing = Metric.where(system_id: system_id, name: name, type: type).first
 
