@@ -17,6 +17,9 @@ module Perus::Pinger
                     else
                         result = false
                     end
+
+                    # clean up any memory used by the executed command
+                    send_command('{"id":2,"method":"Runtime.releaseObjectGroup","params":{"objectGroup":"perus"}}')
                 end
             end
 
