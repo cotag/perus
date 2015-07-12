@@ -104,6 +104,7 @@ module Perus::Server
 
         get '/admin/stats' do
             @stats = Stats.new
+            @queue_length = Server.ping_queue.length
             erb :stats
         end
 
@@ -147,31 +148,30 @@ module Perus::Server
 
         # receive data from a client
         post '/systems/:id/ping' do
-            Server.ping_queue.post do
-                timestamp = Time.now.to_i
+            timestamp = Time.now.to_i
+            ping_params = params.dup
 
+            if request.ip == '127.0.0.1' && ENV['RACK_ENV'] == 'production'
+                system_ip = request.env['HTTP_X_FORWARDED_FOR']
+            else
+                system_ip = request.ip
+            end
+
+            Server.ping_queue << Proc.new do
                 # update the system with its last known ip and update time
-                system = System.with_pk!(params['id'])
+                system = System.with_pk!(ping_params['id'])
                 system.last_updated = timestamp
-
-                if request.ip == '127.0.0.1' && ENV['RACK_ENV'] == 'production'
-                    system.ip = request.env['HTTP_X_FORWARDED_FOR']
-                else
-                    system.ip = request.ip
-                end
+                system.ip = system_ip
+                system.save
 
                 # errors is either nil or a hash of the format - module: [err, ...]
-                system.save_metric_errors(params, timestamp)
+                system.save_metric_errors(ping_params, timestamp)
 
                 # add each new value, a later process cleans up old values
-                system.save_values(params, timestamp)
+                system.save_values(ping_params, timestamp)
 
                 # save action return values and prevent them from running again
-                system.save_actions(params, timestamp)
-
-                # ip, last updated, uploads and metrics are now updated. these are
-                # stored on the system.
-                system.save
+                system.save_actions(ping_params, timestamp)
             end
 
             content_type :json

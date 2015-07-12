@@ -1,4 +1,4 @@
-require 'concurrent'
+require 'thread'
 require 'thin'
 
 DEFAULT_SERVER_OPTIONS = {
@@ -25,6 +25,21 @@ module Perus::Server
             # initialise/migrate the db and start cleanup/caching timers
             DB.start
             DB.start_timers
+
+            # ping data is processed in a thread pool
+            Thread.new do
+                while true
+                    ping = Server.ping_queue.pop
+                    begin
+                        ping.call
+                    rescue => e
+                        puts e.inspect
+                        if e.backtrace.is_a?(Array)
+                            puts e.backtrace.join("\n") + "\n"
+                        end
+                    end
+                end
+            end
         end
 
         def run
@@ -36,16 +51,7 @@ module Perus::Server
         end
 
         def self.ping_queue
-            # ping data is processed in a thread pool
-            @ping_queue ||= Concurrent::ThreadPoolExecutor.new(
-                min_threads: 2,
-                max_threads: 2,
-                max_queue: 0
-            )
-        end
-
-        def self.shutdown
-            @ping_queue.shutdown
+            @ping_queue ||= Queue.new
         end
 
         def self.options

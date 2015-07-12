@@ -9,7 +9,6 @@ Sequel.migration do
             Integer :config_id
             String  :links, text: true
             String  :ip
-            String  :metrics, text: true
             Integer :last_updated
         end
     end

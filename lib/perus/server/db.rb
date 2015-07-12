@@ -5,6 +5,7 @@ require 'concurrent'
 module Perus::Server
     module DB
         MAX_VACUUM_ATTEMPTS = 5
+        MAX_CLEAN_ATTEMPTS = 5
 
         def self.db
             @db
@@ -80,11 +81,29 @@ module Perus::Server
             # are removed from a system, the accompanying metric record is also
             # removed.
             cleanup_task = Concurrent::TimerTask.new do
-                begin
-                    start = Time.now
-                    Perus::Server::DB.cleanup
-                    Stats.cleaned!(Time.now - start)
-                rescue
+                attempts = 0
+                complete = false
+
+                while !complete && attempts < MAX_CLEAN_ATTEMPTS
+                    begin
+                        puts "Cleaning, attempt #{attempts + 1}"
+                        start = Time.now
+                        Perus::Server::DB.cleanup
+                        Stats.cleaned!(Time.now - start)
+                        complete = true
+                        puts "Cleaning complete"
+                        
+                    rescue
+                        attempts += 1
+                        if attempts < MAX_CLEAN_ATTEMPTS
+                            puts "Clean failed, will reattempt after short sleep"
+                            sleep(5)
+                        end
+                    end
+                end
+
+                if !complete
+                    puts "Clean failed more than MAX_CLEAN_ATTEMPTS"
                     Stats.cleaned!('failed')
                 end
             end
@@ -98,12 +117,14 @@ module Perus::Server
             # cached so lookups can be done against the db, rather than running
             # each alert for each system on a page load.
             cache_alerts_task = Concurrent::TimerTask.new do
-                begin
-                    start = Time.now
-                    Perus::Server::Alert.cache_active_alerts
-                    Stats.alerts_cached!(Time.now - start)
-                rescue
-                    Stats.alerts_cached!('failed')
+                if Server.ping_queue.empty?
+                    begin
+                        start = Time.now
+                        Perus::Server::Alert.cache_active_alerts
+                        Stats.alerts_cached!(Time.now - start)
+                    rescue
+                        Stats.alerts_cached!('failed')
+                    end
                 end
             end
 
