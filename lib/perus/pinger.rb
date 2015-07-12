@@ -28,6 +28,7 @@ module Perus
             require './pinger/metrics/temp'
             require './pinger/metrics/value'
             require './pinger/metrics/uptime'
+            require './pinger/metrics/running'
 
             # pinger
             require './pinger/pinger'

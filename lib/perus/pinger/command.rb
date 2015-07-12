@@ -126,8 +126,15 @@ module Perus::Pinger
         class ShellCommandError < StandardError; end
         def shell(command)
             out, err, status = Open3.capture3(command)
-            raise ShellCommandError.new(err.strip) unless err.empty?
-            raise ShellCommandError.new(out.strip) if status.exitstatus > 0
+
+            unless err.empty?
+                raise ShellCommandError.new(err.strip)
+            end
+
+            if status.exitstatus > 0
+                raise ShellCommandError.new("#{out.strip}; exit: #{status.exitstatus}")
+            end
+
             out
         end
 
