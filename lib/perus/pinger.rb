@@ -15,6 +15,8 @@ module Perus
             require './pinger/commands/upgrade'
             require './pinger/commands/script'
             require './pinger/commands/sleep'
+            require './pinger/commands/upstart_start'
+            require './pinger/commands/upstart_stop'
 
             # metrics
             require './pinger/metrics/chrome'
