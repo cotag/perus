@@ -18,19 +18,24 @@ module Perus::Server
             Sequel::Migrator.run(@db, File.join(__dir__, 'migrations'))
 
             # load models - these rely on an existing db connection
-            require File.join(__dir__, 'models', 'system')
-            require File.join(__dir__, 'models', 'config')
-            require File.join(__dir__, 'models', 'value')
-            require File.join(__dir__, 'models', 'group')
-            require File.join(__dir__, 'models', 'error')
-            require File.join(__dir__, 'models', 'alert')
-            require File.join(__dir__, 'models', 'action')
-            require File.join(__dir__, 'models', 'metric')
-            require File.join(__dir__, 'models', 'script')
-            require File.join(__dir__, 'models', 'command_config')
-            require File.join(__dir__, 'models', 'script_command')
-            require File.join(__dir__, 'models', 'config_metric')
+            Dir.chdir(File.join(__dir__, 'models')) do
+                require './system'
+                require './config'
+                require './value'
+                require './group'
+                require './error'
+                require './alert'
+                require './action'
+                require './metric'
+                require './script'
+                require './command_config'
+                require './script_command'
+                require './config_metric'
+                require './active_alert'
+            end
+        end
 
+        def self.start_timers
             # attempt to run vacuum twice a day. this is done to increase
             # performance rather than reclaim unused space. as old values and
             # metrics are deleted the data become very fragmented. vacuuming
@@ -55,6 +60,17 @@ module Perus::Server
             # fire every hour
             cleanup_task.execution_interval = 60 * 60
             cleanup_task.execute
+
+            # alerts can be process intensive, so to keep page refreshes
+            # responsive the 'active' state of an alert for each system is
+            # cached so lookups can be done against the db, rather than running
+            # each alert for each system on a page load.
+            cache_alerts_task = Concurrent::TimerTask.new do
+                Perus::Server::Alert.cache_active_alerts
+            end
+
+            cache_alerts_task.execution_interval = Server.options.cache_alerts_mins * 60
+            cache_alerts_task.execute
         end
 
         def self.cleanup

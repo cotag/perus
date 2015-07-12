@@ -10,7 +10,7 @@
         <dt>Last Updated:</dt>
         <dd><%= @last_updated %></dd>
         <dt>IP:</dt>
-        <dd><%= @system.ip %></dd>
+        <dd><%= @system.ip || 'unknown IP' %></dd>
         <% @str_metrics.each do |name, value| %>
             <dt><%= name %></dt>
             <dd><%= value %></dd>
@@ -18,6 +18,16 @@
         <% unless @links.empty? %>
             <dt>Links:</dt>
             <dd><%= @links %></dd>
+        <% end %>
+        <% unless @system.active_alerts.empty? %>
+            <dt>Alerts:</dt>
+            <dd>
+                <ul class="alerts">
+                    <% @system.active_alerts.each do |active_alert| %>
+                        <li class="<%= active_alert.alert.severity %>"><%= active_alert.alert.name %> (<%= active_alert.active_for %>)</li>
+                    <% end %>
+                </ul>
+            </dd>
         <% end %>
     </dl>
 </section>

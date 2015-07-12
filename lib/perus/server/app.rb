@@ -197,25 +197,27 @@ module Perus::Server
 
         # create a new action
         post '/systems/:id/actions' do
-            action = Action.new
-            action.system_id = params['id']
-
-            if params['script_id']
-                action.script_id = params['script_id']
-            else
-                command_config = CommandConfig.create_with_params(params)
-                action.command_config_id = command_config.id
-            end
-
-            begin
-                action.save
-            rescue
-                if action.command_config_id
-                    CommandConfig.with_pk!(action.command_config_id).destroy
-                end
-            end
-
+            Action.add(params['id'], params)
             redirect "#{url_prefix}systems/#{params['id']}#actions"
+        end
+
+        # create an action for all systems in a group
+        post '/groups/:id/systems/actions' do
+            group = Group.with_pk!(params['id'])
+            group.systems.each do |system|
+                Action.add(system.id, params)
+            end
+
+            redirect "#{url_prefix}groups/#{params['id']}/systems"
+        end
+
+        # create an action for all systems
+        post '/systems/actions' do
+            System.each do |system|
+                Action.add(system.id, params)
+            end
+
+            redirect "#{url_prefix}systems"
         end
 
         # delete an action. deletion also clears any uploaded files.
@@ -232,16 +234,7 @@ module Perus::Server
         # overview
         get '/' do
             systems = System.all
-            alerts = Alert.all
-            results = alerts.collect do |alert|
-                begin
-                    alert.execute(systems)
-                rescue => e
-                    "An error occurred running this alert: #{e.inspect}"
-                end
-            end
-
-            @alerts = Hash[alerts.zip(results)]
+            @alerts = Alert.all.sort_by(&:severity_level).reverse
             erb :index
         end
 
@@ -249,6 +242,8 @@ module Perus::Server
         get '/systems' do
             @systems = System.all.group_by(&:orientation)
             @title = 'All Systems'
+            @scripts = Script.all
+            @action_url = "systems/actions"
             erb :systems
         end
 
@@ -257,6 +252,8 @@ module Perus::Server
             group = Group.with_pk!(params['id'])
             @systems = group.systems.group_by(&:orientation)
             @title = group.name
+            @scripts = Script.all
+            @action_url = "groups/#{params['id']}/systems/actions"
             erb :systems
         end
 

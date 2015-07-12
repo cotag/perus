@@ -9,16 +9,18 @@ DEFAULT_SERVER_OPTIONS = {
         'port' => 3000,
         'site_name' => 'Perus',
         'url_prefix' => '/',
-        'keep_hours' => 24
+        'keep_hours' => 24,
+        'cache_alerts_mins' => 1
     }
 }
 
 module Perus::Server
     class Server
         def initialize(options_path = DEFAULT_SERVER_OPTIONS_PATH, environment = 'development')
-            self.class.options.load(options_path, DEFAULT_SERVER_OPTIONS)
+            self.class.load_options(options_path)
             ENV['RACK_ENV'] = environment
             DB.start
+            DB.start_timers
         end
 
         def run
@@ -31,6 +33,10 @@ module Perus::Server
 
         def self.options
             @options ||= Perus::Options.new
+        end
+
+        def self.load_options(path = DEFAULT_SERVER_OPTIONS_PATH)
+            options.load(path, DEFAULT_SERVER_OPTIONS)
         end
     end
 end

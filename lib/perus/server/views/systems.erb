@@ -10,13 +10,49 @@
                 <div class="screenshot" style="background-image: url(<%= system.screenshot_url %>)"></div>
                 <h1 class="system-id"><%= system.name %></h1>
                 <p><span class="system-id"><%= system.logical_name %></span> - <span class="system-id"><%= system.ip || 'unknown IP' %></span></p>
+                <div class="alert <%= system.alert_class %>"></div>
             </a>
         <% end %>
     </div>
 <% end %>
 <p id="no-systems" <% unless @systems.empty? %>style="display: none"<% end %>>No Systems</p>
 
+<p id="add-command">
+    Add action to <%= @title %>:
+    <select id="command-select">
+        <option></option>
+        <optgroup label="Commands">
+            <% command_actions.each do |command| %>
+                <option value="<%= command.name %>"><%= command.human_name %></option>
+            <% end %>
+        </optgroup>
+        <optgroup label="Scripts">
+            <% @scripts.each do |script| %>
+                <option value="<%= script.code_name %>"><%= script.name %></option>
+            <% end %>
+        </optgroup>
+    </select>
+</p>
+
+<!-- new commands -->
+<% command_actions.each do |command| %>
+    <%= erb :command_config, locals: {command: command, action: "#{url_prefix}#{@action_url}"} %>
+<% end %>
+<% @scripts.each do |script| %>
+    <form class="command" data-command="<%= script.code_name %>" style="display: none" method="POST" action="<%= url_prefix %><%= @action_url %>">
+        <h1><%= script.name %></h1>
+        <p><%= script.description %></p>
+        <input type="hidden" name="script_id" value="<%= script.id %>">
+        <p class="actions"><input type="submit" value="Add"></p>
+    </form>
+<% end %>
+
 <script>
+    $('#command-select').change(function() {
+        $('form.command').hide();
+        $('form[data-command="' + $(this).val() + '"]').show();
+    });
+
     function filter() {
         var allSystems = $('.system');
         var anyMatching = false;

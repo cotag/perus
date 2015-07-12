@@ -67,5 +67,25 @@ module Perus::Server
                 File.unlink(file_path)
             end
         end
+
+        def self.add(system_id, params)
+            action = Action.new
+            action.system_id = system_id
+
+            if params['script_id']
+                action.script_id = params['script_id']
+            else
+                command_config = CommandConfig.create_with_params(params)
+                action.command_config_id = command_config.id
+            end
+
+            begin
+                action.save
+            rescue
+                if action.command_config_id
+                    CommandConfig.with_pk!(action.command_config_id).destroy
+                end
+            end
+        end
     end
 end

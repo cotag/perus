@@ -17,9 +17,10 @@ elsif ARGV[0] == 'console'
     # start in the Server namespace
     include Perus::Server
 
-    # console is used to access the database. initialise a server to load
-    # default settings and start the database connection.
-    Server.new
+    # console is used to access the database. initialise server options to find
+    # the db path and start the database connection.
+    Server.load_options
+    DB.start
 
     # remove the arg otherwise irb will try to load a file named 'console'
     ARGV.shift
