@@ -10,6 +10,7 @@
                 <div class="screenshot" style="background-image: url(<%= system.screenshot_url %>)"></div>
                 <h1 class="system-id"><%= system.name %></h1>
                 <p><span class="system-id"><%= system.logical_name %></span> - <span class="system-id"><%= system.ip || 'unknown IP' %></span></p>
+                <div class="alert <%= system.alert_class %>"></div>
             </a>
         <% end %>
     </div>

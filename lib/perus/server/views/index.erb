@@ -2,19 +2,21 @@
 <% if @alerts.empty? %>
     <p>No alerts</p>
 <% else %>
-    <% @alerts.each do |alert, systems| %>
-        <div class="alert <%= alert.severity %>">
+    <% @alerts.each do |alert| %>
+        <div class="alert">
             <h1><%= alert.name %></h1>
-            <% if systems.empty? %>
-                <p>All systems functioning normally</p>
-            <% elsif systems.is_a?(String) %>
-                <p><%= systems.gsub('<', '&lt;').gsub('>', '&gt;') %></p>
+            <% unless alert.errors.nil? || alert.errors.empty? %>
+                <p>An error occurred running this alert: <%= alert.errors.gsub('<', '&lt;').gsub('>', '&gt;') %></p>
             <% else %>
-                <ul>
-                    <% systems.each do |system| %>
-                        <li><a href="<%= url_prefix %>systems/<%= system.id %>"><%= system.name %></a></li>
-                    <% end %>
-                </ul>
+                <% if alert.active_alerts.empty? %>
+                    <p>All systems functioning normally</p>
+                <% else %>
+                    <ul class="alerts">
+                        <% alert.active_alerts.each do |active_alert| %>
+                            <li class="<%= alert.severity %>"><a href="<%= url_prefix %>systems/<%= active_alert.system.id %>"><%= active_alert.system.name %> (<%= active_alert.active_for %>)</a></li>
+                        <% end %>
+                    </ul>
+                <% end %>
             <% end %>
         </div>
     <% end %> 

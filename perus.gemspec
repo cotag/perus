@@ -31,4 +31,5 @@ Gem::Specification.new do |spec|
     spec.add_dependency 'sequel', '~> 4.23'
     spec.add_dependency 'iniparse', '~> 1.4'
     spec.add_dependency 'thin', '~> 1.6'
+    spec.add_dependency 'chronic_duration', '~> 0.10'
 end

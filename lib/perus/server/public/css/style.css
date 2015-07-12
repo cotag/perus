@@ -200,6 +200,7 @@ main {
 
 .systems a {
     display: inline-block;
+    position: relative;
     background-color: white;
     padding: 10px;
     border-radius: 4px;
@@ -229,6 +230,27 @@ main {
         color: #bbb;
         margin-top: 3px;
         font-weight: 300;
+    }
+
+    .systems a div.alert {
+        width: 12px;
+        height: 12px;
+        border-radius: 12px;
+        position: absolute;
+        bottom: -20px;
+        right: 10px;
+    }
+
+    .systems a div.alert.error {
+        background-color: red;
+    }
+
+    .systems a div.alert.warning {
+        background-color: yellow;
+    }
+
+    .systems a div.alert.notice {
+        background-color: blue;
     }
 
 .systems.portrait a {
@@ -362,19 +384,22 @@ article.graph {
         margin-bottom: 5px;
     }
 
-    .alert ul {
+    ul.alerts {
         list-style-type: none;
         padding: 0px;
         font-size: 14px;
+    }
+
+    .alert h1 + ul.alerts {
         margin-top: 10px;
     }
 
-        .alert ul li {
+        ul.alerts li {
             padding-left: 20px;
             position: relative;
         }
 
-        .alert ul li::before {
+        ul.alerts li::before {
             position: absolute;
             left: 0px;
             top: 1px;
@@ -384,15 +409,15 @@ article.graph {
             border-radius: 12px;
         }
 
-        .alert.warning ul li::before {
+        ul.alerts li.warning::before {
             background-color: yellow;
         }
 
-        .alert.error ul li::before {
+        ul.alerts li.error::before {
             background-color: red;
         }
 
-        .alert.notice ul li::before {
+        ul.alerts li.notice::before {
             background-color: blue;
         }
 

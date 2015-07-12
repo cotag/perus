@@ -10,6 +10,7 @@ module Perus::Server
         one_to_many :metrics
         one_to_many :values
         one_to_many :actions
+        one_to_many :active_alerts
         one_to_many :collection_errors, class_name: 'Perus::Server::Error'
 
         def validate
@@ -26,9 +27,18 @@ module Perus::Server
             values.each(&:destroy)
             actions.each(&:destroy)
             collection_errors.each(&:destroy)
+            active_alerts.each(&:destroy)
 
             # remove any uploaded files
             FileUtils.rm_rf([uploads_dir], secure: true)
+        end
+
+        def alert_class
+            return '' if active_alerts.empty?
+            severities = active_alerts.map(&:severity).uniq
+            return 'error' if severities.include?('error')
+            return 'warning' if severities.include?('warning')
+            return 'notice' if severities.include?('notice')
         end
 
         def pending_actions

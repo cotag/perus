@@ -232,16 +232,7 @@ module Perus::Server
         # overview
         get '/' do
             systems = System.all
-            alerts = Alert.all
-            results = alerts.collect do |alert|
-                begin
-                    alert.execute(systems)
-                rescue => e
-                    "An error occurred running this alert: #{e.inspect}"
-                end
-            end
-
-            @alerts = Hash[alerts.zip(results)]
+            @alerts = Alert.all
             erb :index
         end
 

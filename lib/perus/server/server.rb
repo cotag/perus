@@ -9,7 +9,8 @@ DEFAULT_SERVER_OPTIONS = {
         'port' => 3000,
         'site_name' => 'Perus',
         'url_prefix' => '/',
-        'keep_hours' => 24
+        'keep_hours' => 24,
+        'cache_alerts_mins' => 1
     }
 }
 
