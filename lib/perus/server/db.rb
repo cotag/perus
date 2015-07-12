@@ -4,6 +4,8 @@ require 'concurrent'
 
 module Perus::Server
     module DB
+        MAX_VACUUM_ATTEMPTS = 5
+
         def self.db
             @db
         end
@@ -42,11 +44,29 @@ module Perus::Server
             # restructures the db so system records in the values index should
             # be sequentially stored
             vacuum_task = Concurrent::TimerTask.new do
-                begin
-                    start = Time.now
-                    @db.execute('vacuum')
-                    Stats.vacuumed!(Time.now - start)
-                rescue
+                attempts = 0
+                complete = false
+
+                while !complete && attempts < MAX_VACUUM_ATTEMPTS
+                    begin
+                        puts "Vacuuming, attempt #{attempts + 1}"
+                        start = Time.now
+                        @db.execute('vacuum')
+                        Stats.vacuumed!(Time.now - start)
+                        complete = true
+                        puts "Vacuuming complete"
+                    rescue
+                        attempts += 1
+
+                        if attempts < MAX_VACUUM_ATTEMPTS
+                            puts "Vacuum failed, will reattempt after short sleep"
+                            sleep(5)
+                        end
+                    end
+                end
+
+                if !complete
+                    puts "Vacuum failed more than MAX_VACUUM_ATTEMPTS"
                     Stats.vacuumed!('failed')
                 end
             end
