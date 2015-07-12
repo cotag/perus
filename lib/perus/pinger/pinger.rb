@@ -57,6 +57,10 @@ DEFAULT_PINGER_OPTIONS = {
 
     'ServiceStop' => {
         'job' => []
+    },
+
+    'RunInstalledCommand' => {
+        'path' => []
     }
 }
 
