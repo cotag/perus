@@ -6,6 +6,10 @@ module Perus::Server
             system.instance_eval(code)
         end
 
+        def errors
+            values[:errors]
+        end
+
         def after_destroy
             super
             active_alerts.each(&:destroy)

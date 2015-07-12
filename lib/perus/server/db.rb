@@ -8,7 +8,7 @@ module Perus::Server
             @db
         end
 
-        def self.start
+        def self.start(start_timers = false)
             puts 'Loading database'
             Sequel.extension :migration
             Sequel.extension :inflector
@@ -34,6 +34,8 @@ module Perus::Server
                 require './active_alert'
             end
 
+            return if not start_timers
+            
             # attempt to run vacuum twice a day. this is done to increase
             # performance rather than reclaim unused space. as old values and
             # metrics are deleted the data become very fragmented. vacuuming
