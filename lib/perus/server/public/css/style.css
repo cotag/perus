@@ -297,6 +297,10 @@ article.graph {
         margin-bottom: 20px;
     }
 
+.dygraph-legend {
+    background-color: rgba(255, 255, 255, 0.5) !important;
+}
+
 /* metric collection errors */
 #errors {
     padding-top: 20px;

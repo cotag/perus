@@ -44,7 +44,14 @@
                     document.getElementById("metric-<%= name %>"),
                     "<%= url_prefix %>systems/<%= @system.id %>/values?metrics=<%= metrics.join(',') %>",
                     {
-                        labelsSeparateLines: true
+                        labelsSeparateLines: true,
+                        axes: {
+                            y: {
+                                valueFormatter: function(y) {
+                                    return y.toFixed(2);
+                                }
+                            }
+                        }
                     }
                 );
 
