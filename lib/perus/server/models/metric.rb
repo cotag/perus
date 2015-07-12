@@ -33,8 +33,14 @@ module Perus::Server
         end
 
         def values_over_period(period)
-            raise 'invalid period' unless period.keys.include?(:hours)
-            min_timeout = Time.now.to_i - (period[:hours] * 60 * 60)
+            if period.keys.include?(:hours)
+                min_timeout = Time.now.to_i - (period[:hours] * 60 * 60)
+            elsif period.keys.include?(:mins)
+                min_timeout = Time.now.to_i - (period[:mins] * 60)
+            else
+                raise 'invalid period - must be :hours or :mins'
+            end
+            
             values_dataset.where("timestamp >= #{min_timeout}")
         end
 

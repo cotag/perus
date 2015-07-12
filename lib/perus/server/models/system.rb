@@ -52,6 +52,14 @@ module Perus::Server
             pending_actions.collect(&:config_hashes).flatten
         end
 
+        def config_hash
+            {
+                id: id,
+                metrics: config.metric_hashes,
+                actions: pending_actions.map(&:config_hash).flatten
+            }
+        end
+
 
         # ---------------------------------------
         # metrics

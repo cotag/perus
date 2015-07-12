@@ -148,7 +148,7 @@ module Perus::Server
             system = System.with_pk!(params['id'])
             system.last_updated = timestamp
 
-            if request.ip == '127.0.0.1'
+            if request.ip == '127.0.0.1' && ENV['RACK_ENV'] == 'production'
                 system.ip = request.env['HTTP_X_FORWARDED_FOR']
             else
                 system.ip = request.ip
@@ -173,12 +173,21 @@ module Perus::Server
         # system config
         get '/systems/:id/config' do
             system = System.with_pk!(params['id'])
-            config = {
-                metrics: system.config.metric_hashes,
-                actions: system.pending_actions.map(&:config_hash).flatten
-            }
             content_type :json
-            config.to_json
+            system.config_hash.to_json
+        end
+
+        # config of system based on request ip
+        get '/systems/config_for_ip' do
+            if request.ip == '127.0.0.1' && ENV['RACK_ENV'] == 'production'
+                ip = request.env['HTTP_X_FORWARDED_FOR']
+            else
+                ip = request.ip
+            end
+
+            system = System.where(ip: ip).first
+            content_type :json
+            system.config_hash.to_json
         end
 
         # render all errors in html to replace the shortened subset on the system page

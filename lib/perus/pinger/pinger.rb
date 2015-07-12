@@ -6,7 +6,6 @@ require 'uri'
 
 DEFAULT_PINGER_OPTIONS = {
     '__anonymous__' => {
-        'system_id' => 1,
         'server' => 'http://127.0.0.1:3000/'
     },
 
@@ -72,15 +71,7 @@ module Perus::Pinger
 
         def initialize(options_path = DEFAULT_PINGER_OPTIONS_PATH)
             Pinger.options.load(options_path, DEFAULT_PINGER_OPTIONS)
-
-            # cache urls on initialisation since the urls depend on values known
-            # at startup and that won't change over the object lifetime
-            config_path = URI("systems/#{Pinger.options.system_id}/config")
-            pinger_path = URI("systems/#{Pinger.options.system_id}/ping")
-            server_uri  = URI(Pinger.options.server)
-
-            @config_url = (server_uri + config_path).to_s
-            @pinger_url = (server_uri + pinger_path).to_s
+            @server_uri  = URI(Pinger.options.server)
 
             @metrics = []
             @metric_results = {}
@@ -103,10 +94,19 @@ module Perus::Pinger
         # configuration
         #----------------------
         def load_config
+            if Pinger.options.system_id.nil?
+                config_path = URI("systems/config_for_ip")
+            else
+                config_path = URI("systems/#{Pinger.options.system_id}/config")
+            end
+
+            config_url = (@server_uri + config_path).to_s
+
             # load the system config by requesting it from the perus server
-            json = JSON.parse(RestClient.get(@config_url))
+            json = JSON.parse(RestClient.get(config_url))
             json['metrics'] ||= []
             json['actions'] ||= []
+            @system_id = json['id']
 
             # load metric and command modules based on the config
             json['metrics'].each do |config|
@@ -207,8 +207,11 @@ module Perus::Pinger
             @metric_errors.reject! {|metric, errors| errors.empty?}
             add_to_payload(payload, 'metric_errors', @metric_errors)
 
+            pinger_path = URI("systems/#{@system_id}/ping")
+            pinger_url = (@server_uri + pinger_path).to_s
+
             begin
-                RestClient.post(@pinger_url, payload)
+                RestClient.post(pinger_url, payload)
             rescue => e
                 puts 'Ping failed with exception'
                 puts format_exception(e)
