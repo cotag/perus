@@ -69,8 +69,8 @@ module Perus::Pinger
 
         def run
             load_config
-            run_metrics
             run_actions
+            run_metrics
             send_response
             cleanup
         end

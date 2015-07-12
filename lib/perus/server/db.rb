@@ -62,7 +62,7 @@ module Perus::Server
             keep_hours = Server.options.keep_hours
 
             # remove old values
-            min_timestamp = Time.now.to_i - (keep_hours * 60)
+            min_timestamp = Time.now.to_i - (keep_hours * 60 * 60)
             values = Value.where("timestamp < #{min_timestamp}")
             puts "Deleting #{values.count} values"
             values.each(&:destroy)

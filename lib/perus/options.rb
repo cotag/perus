@@ -2,7 +2,7 @@ require 'iniparse'
 
 module Perus
     class Options
-        def initialize()
+        def initialize
             @defaults = {}
         end
 
@@ -12,7 +12,12 @@ module Perus
             else
                 user_options = {}
             end
-            @options = defaults.merge(user_options)
+
+            # options are only one level deep, so resolve conflicts
+            # by just merging the two conflicting hashes again
+            @options = defaults.merge(user_options) do |key, default, user|
+                default.merge(user)
+            end
         end
 
         def method_missing(name, *params, &block)
