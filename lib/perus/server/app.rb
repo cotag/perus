@@ -147,30 +147,33 @@ module Perus::Server
 
         # receive data from a client
         post '/systems/:id/ping' do
-            timestamp = Time.now.to_i
+            Server.ping_queue.post do
+                timestamp = Time.now.to_i
 
-            # update the system with its last known ip and update time
-            system = System.with_pk!(params['id'])
-            system.last_updated = timestamp
+                # update the system with its last known ip and update time
+                system = System.with_pk!(params['id'])
+                system.last_updated = timestamp
 
-            if request.ip == '127.0.0.1' && ENV['RACK_ENV'] == 'production'
-                system.ip = request.env['HTTP_X_FORWARDED_FOR']
-            else
-                system.ip = request.ip
+                if request.ip == '127.0.0.1' && ENV['RACK_ENV'] == 'production'
+                    system.ip = request.env['HTTP_X_FORWARDED_FOR']
+                else
+                    system.ip = request.ip
+                end
+
+                # errors is either nil or a hash of the format - module: [err, ...]
+                system.save_metric_errors(params, timestamp)
+
+                # add each new value, a later process cleans up old values
+                system.save_values(params, timestamp)
+
+                # save action return values and prevent them from running again
+                system.save_actions(params, timestamp)
+
+                # ip, last updated, uploads and metrics are now updated. these are
+                # stored on the system.
+                system.save
             end
 
-            # errors is either nil or a hash of the format - module: [err, ...]
-            system.save_metric_errors(params, timestamp)
-
-            # add each new value, a later process cleans up old values
-            system.save_values(params, timestamp)
-
-            # save action return values and prevent them from running again
-            system.save_actions(params, timestamp)
-
-            # ip, last updated, uploads and metrics are now updated. these are
-            # stored on the system.
-            system.save
             content_type :json
             {success: true}.to_json
         end

@@ -55,9 +55,9 @@ module Perus::Server
                         Stats.vacuumed!(Time.now - start)
                         complete = true
                         puts "Vacuuming complete"
+                        
                     rescue
                         attempts += 1
-
                         if attempts < MAX_VACUUM_ATTEMPTS
                             puts "Vacuum failed, will reattempt after short sleep"
                             sleep(5)

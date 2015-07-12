@@ -1,3 +1,4 @@
+require 'concurrent'
 require 'thin'
 
 DEFAULT_SERVER_OPTIONS = {
@@ -20,6 +21,8 @@ module Perus::Server
         def initialize(options_path = DEFAULT_SERVER_OPTIONS_PATH, environment = 'development')
             self.class.load_options(options_path)
             ENV['RACK_ENV'] = environment
+
+            # initialise/migrate the db and start cleanup/caching timers
             DB.start
             DB.start_timers
         end
@@ -30,6 +33,19 @@ module Perus::Server
                 self.class.options.port.to_i,
                 App
             )
+        end
+
+        def self.ping_queue
+            # ping data is processed in a thread pool
+            @ping_queue ||= Concurrent::ThreadPoolExecutor.new(
+                min_threads: 2,
+                max_threads: 2,
+                max_queue: 0
+            )
+        end
+
+        def self.shutdown
+            @ping_queue.shutdown
         end
 
         def self.options
