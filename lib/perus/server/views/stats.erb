@@ -1,0 +1,31 @@
+<h1>Background Stats</h1>
+
+<h2 class="stats">Vacuuming</h2>
+<dl>
+    <dt>Last Vacuum</dt>
+    <dd><%= @stats.last_vacuum || 'nil' %></dd>
+    <dt>Vacuum Time</dt>
+    <dd><%= "%0.4f" % @stats.vacuum_time rescue 'nil' %></dd>
+    <dt>Average Vacuum Time</dt>
+    <dd><%= "%0.4f" % @stats.average_vacuum_time rescue 'nil' %></dd>
+</dl>
+
+<h2 class="stats">Alerts Caching</h2>
+<dl>
+    <dt>Last Alerts Cache</dt>
+    <dd><%= @stats.last_alerts_cache || 'nil' %></dd>
+    <dt>Alerts Cache Time</dt>
+    <dd><%= "%0.4f" % @stats.alerts_cache_time rescue 'nil' %></dd>
+    <dt>Average Alerts Cache Time</dt>
+    <dd><%= "%0.4f" % @stats.average_alerts_cache_time rescue 'nil' %></dd>
+</dl>
+
+<h2 class="stats">Cleaning</h2>
+<dl>
+    <dt>Last Clean</dt>
+    <dd><%= @stats.last_clean || 'nil' %></dd>
+    <dt>Clean Time</dt>
+    <dd><%= "%0.4f" % @stats.clean_time rescue 'nil' %></dd>
+    <dt>Average Clean Time</dt>
+    <dd><%= "%0.4f" % @stats.average_clean_time rescue 'nil' %></dd>
+</dl>

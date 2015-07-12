@@ -102,6 +102,11 @@ module Perus::Server
             redirect "#{url_prefix}admin/configs/#{params['config_id']}"
         end
 
+        get '/admin/stats' do
+            @stats = Stats.new
+            erb :stats
+        end
+
 
         #----------------------
         # API

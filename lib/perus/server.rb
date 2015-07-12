@@ -16,6 +16,7 @@ module Perus
             require './server/admin'
             require './server/app'
             require './server/db'
+            require './server/stats'
             require './server/server'
         end
     end

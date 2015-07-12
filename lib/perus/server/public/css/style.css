@@ -292,25 +292,25 @@ main {
         width: 450px;
     }
 
-    #meta dl {
+    dl {
         display: inline-block;
         vertical-align: top;
         width: 450px;
     }
 
-        #meta dt, #meta dd {
+        dt, dd {
             display: inline-block;
             vertical-align: top;
             margin-bottom: 10px;
             font-size: 13px;
         }
 
-        #meta dt {
+        dt {
             width: 100px;
             font-weight: 600;
         }
 
-        #meta dd {
+        dd {
             width: 340px;
             line-height: 16px;
         }
@@ -507,3 +507,8 @@ article.graph {
         padding: 15px 20px;
         border-radius: 4px;
     }
+
+h2.stats {
+    margin-bottom: 10px;
+    margin-top: 20px;
+}

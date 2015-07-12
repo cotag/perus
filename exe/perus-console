@@ -1,0 +1,24 @@
+#!/usr/bin/env ruby
+require 'perus'
+require 'optparse'
+require 'irb'
+
+options_path = Perus::Server::DEFAULT_SERVER_OPTIONS_PATH
+
+OptionParser.new do |opts|
+    opts.banner = "Usage: perus-console [options]"
+
+    opts.on('-c', '--config PATH', "Path to config file (default: #{Perus::Server::DEFAULT_SERVER_OPTIONS_PATH})") do |c|
+        options_path = c
+    end
+
+    opts.on('-h', '--help', 'Prints this help') do
+        puts opts
+        exit
+    end
+end.parse!
+
+include Perus::Server
+Server.load_options(options_path)
+DB.start
+IRB.start

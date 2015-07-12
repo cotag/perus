@@ -42,7 +42,13 @@ module Perus::Server
             # restructures the db so system records in the values index should
             # be sequentially stored
             vacuum_task = Concurrent::TimerTask.new do
-                @db.execute('vacuum')
+                begin
+                    start = Time.now
+                    @db.execute('vacuum')
+                    Stats.vacuumed!(Time.now - start)
+                rescue
+                    Stats.vacuumed!('failed')
+                end
             end
 
             # fire every 12 hours
@@ -54,7 +60,13 @@ module Perus::Server
             # are removed from a system, the accompanying metric record is also
             # removed.
             cleanup_task = Concurrent::TimerTask.new do
-                Perus::Server::DB.cleanup
+                begin
+                    start = Time.now
+                    Perus::Server::DB.cleanup
+                    Stats.cleaned!(Time.now - start)
+                rescue
+                    Stats.cleaned!('failed')
+                end
             end
 
             # fire every hour
@@ -66,10 +78,16 @@ module Perus::Server
             # cached so lookups can be done against the db, rather than running
             # each alert for each system on a page load.
             cache_alerts_task = Concurrent::TimerTask.new do
-                Perus::Server::Alert.cache_active_alerts
+                begin
+                    start = Time.now
+                    Perus::Server::Alert.cache_active_alerts
+                    Stats.alerts_cached!(Time.now - start)
+                rescue
+                    Stats.alerts_cached!('failed')
+                end
             end
 
-            cache_alerts_task.execution_interval = Server.options.cache_alerts_mins * 60
+            cache_alerts_task.execution_interval = Server.options.cache_alerts_secs
             cache_alerts_task.execute
         end
 
