@@ -20,6 +20,7 @@ module Perus::Server
             self.class.load_options(options_path)
             ENV['RACK_ENV'] = environment
             DB.start
+            DB.start_timers
         end
 
         def run

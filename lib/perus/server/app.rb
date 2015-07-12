@@ -232,7 +232,17 @@ module Perus::Server
         # overview
         get '/' do
             systems = System.all
-            @alerts = Alert.all
+            @alerts = Alert.all.sort_by do |alert|
+                if alert.active_alerts_dataset.empty?
+                    0
+                elsif alert.severity == 'notice'
+                    1
+                elsif alert.severity == 'warning'
+                    2
+                elsif alert.severity == 'error'
+                    3
+                end
+            end.reverse
             erb :index
         end
 

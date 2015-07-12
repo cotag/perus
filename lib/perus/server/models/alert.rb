@@ -6,7 +6,7 @@ module Perus::Server
             system.instance_eval(code)
         end
 
-        def errors
+        def execute_errors
             values[:errors]
         end
 

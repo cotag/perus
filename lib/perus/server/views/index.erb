@@ -5,8 +5,8 @@
     <% @alerts.each do |alert| %>
         <div class="alert">
             <h1><%= alert.name %></h1>
-            <% unless alert.errors.nil? || alert.errors.empty? %>
-                <p>An error occurred running this alert: <%= alert.errors.gsub('<', '&lt;').gsub('>', '&gt;') %></p>
+            <% unless alert.execute_errors.nil? || alert.execute_errors.empty? %>
+                <p>An error occurred running this alert: <%= alert.execute_errors.gsub('<', '&lt;').gsub('>', '&gt;') %></p>
             <% else %>
                 <% if alert.active_alerts.empty? %>
                     <p>All systems functioning normally</p>
