@@ -1,17 +1,50 @@
-<h1><%= @title %></h1>
+<h1>
+    <%= @title %>
+    <input type="text" id="system-search" placeholder="search: name, logical name, ip">
+</h1>
 
-<% unless @systems.empty? %>
-    <% @systems.each do |(orientation, systems)| %>
-        <div class="<%= orientation %> systems">
-            <% systems.each do |system| %>
-                <a href="<%= url_prefix %>systems/<%= system.id %>">
-                    <div class="screenshot" style="background-image: url(<%= system.screenshot_url %>)"></div>
-                    <h1><%= system.name %></h1>
-                    <p><%= system.logical_name %> - <%= system.ip || 'unknown IP' %></p>
-                </a>
-            <% end %>
-        </div>
-    <% end %>
-<% else %>
-    <p>No Systems</p>
+<% @systems.each do |(orientation, systems)| %>
+    <div class="<%= orientation %> systems">
+        <% systems.each do |system| %>
+            <a href="<%= url_prefix %>systems/<%= system.id %>" class="system">
+                <div class="screenshot" style="background-image: url(<%= system.screenshot_url %>)"></div>
+                <h1 class="system-id"><%= system.name %></h1>
+                <p><span class="system-id"><%= system.logical_name %></span> - <span class="system-id"><%= system.ip || 'unknown IP' %></span></p>
+            </a>
+        <% end %>
+    </div>
 <% end %>
+<p id="no-systems" <% unless @systems.empty? %>style="display: none"<% end %>>No Systems</p>
+
+<script>
+    function filter() {
+        var allSystems = $('.system');
+        var anyMatching = false;
+        var query = $.trim($('#system-search').val()).toLowerCase();;
+
+        if (query == '') {
+            allSystems.show();
+            anyMatching = true;
+
+        } else {
+            allSystems.each(function(i, el) {
+                var system = $(el);
+                var ids = system.find('.system-id').text().toLowerCase();
+                if (ids.includes(query)) {
+                    anyMatching = true;
+                    system.show();
+                } else {
+                    system.hide();
+                }
+            });
+        }
+
+        if (anyMatching)
+            $('#no-systems').hide();
+        else
+            $('#no-systems').show();
+    }
+
+    $('#system-search').keyup(filter);
+    $('#system-search').change(filter);
+</script>
