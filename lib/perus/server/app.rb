@@ -281,7 +281,7 @@ module Perus::Server
 
             # make links clickable
             @links = @system.links.to_s.gsub("\n", "<br>")
-            URI::extract(@links).each {|uri| @links.gsub!(uri, %Q{<a href="#{uri}">#{uri}</a>})}
+            URI::extract(@links).each {|uri| @links.gsub!(uri, %Q{<a href="#{uri}" target="_new">#{uri}</a>})}
 
             # last updated is a timestamp, conver
             if @system.last_updated
