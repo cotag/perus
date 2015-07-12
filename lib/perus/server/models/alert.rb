@@ -10,6 +10,18 @@ module Perus::Server
             values[:errors]
         end
 
+        def severity_level
+            if active_alerts_dataset.empty?
+                0
+            elsif severity == 'notice'
+                1
+            elsif severity == 'warning'
+                2
+            elsif severity == 'error'
+                3
+            end
+        end
+
         def after_destroy
             super
             active_alerts.each(&:destroy)
