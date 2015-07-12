@@ -37,6 +37,26 @@ DEFAULT_PINGER_OPTIONS = {
 
     'KillProcess' => {
         'process_name' => []
+    },
+
+    'Running' => {
+        'process_path' => []
+    },
+
+    'UpstartStart' => {
+        'job' => []
+    },
+
+    'UpstartStop' => {
+        'job' => []
+    },
+
+    'ServiceStart' => {
+        'job' => []
+    },
+
+    'ServiceStop' => {
+        'job' => []
     }
 }
 
