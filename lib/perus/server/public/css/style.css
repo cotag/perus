@@ -195,7 +195,7 @@ main {
 
 /* systems list */
 .systems {
-    margin-bottom: 80px;
+    margin-bottom: 30px;
 }
 
 .systems a {
@@ -446,6 +446,10 @@ article.graph {
 #add-command {
     font-size: 13px;
     margin-top: 30px;
+}
+
+#no-systems + #add-command {
+    margin-top: 0px;
 }
 
     #add-command select {
