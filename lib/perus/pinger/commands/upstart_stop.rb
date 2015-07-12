@@ -5,7 +5,7 @@ module Perus::Pinger
         option :job, restricted: true
 
         def run
-            result = shell("sudo stop #{option.job}")
+            result = shell("sudo stop #{options.job}")
             true # shell will capture any errors
         end
     end
