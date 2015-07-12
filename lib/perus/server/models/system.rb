@@ -94,7 +94,11 @@ module Perus::Server
         end
 
         def latest(name)
-            values_dataset.where(metric: name).order_by(:timestamp).last
+            values_dataset.where(metric: name.to_s).order_by(:timestamp).last
+        end
+
+        def metric(name)
+            metrics_dataset.where(name: name.to_s).first
         end
 
 

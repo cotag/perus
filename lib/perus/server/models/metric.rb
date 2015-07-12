@@ -32,6 +32,17 @@ module Perus::Server
             system.values_dataset.where(metric: name)
         end
 
+        def values_over_period(period)
+            raise 'invalid period' unless period.keys.include?(:hours)
+            min_timeout = Time.now.to_i - (period[:hours] * 60 * 60)
+            values_dataset.where("timestamp >= #{min_timeout}")
+        end
+
+        def num_values_over_period(period)
+            values = values_over_period(period)
+            values.map(&:num_value)
+        end
+
         def after_destroy
             super
             File.unlink(path) if file && File.exists?(path)
