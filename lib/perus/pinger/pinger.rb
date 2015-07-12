@@ -108,6 +108,10 @@ module Perus::Pinger
             json['actions'] ||= []
             @system_id = json['id']
 
+            if @system_id == 'nil'
+                raise 'This system is unknown to the server'
+            end
+
             # load metric and command modules based on the config
             json['metrics'].each do |config|
                 begin
