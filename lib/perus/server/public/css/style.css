@@ -508,6 +508,20 @@ article.graph {
         border-radius: 4px;
     }
 
+#actions-menu {
+}
+
+    #actions-menu p {
+        display: inline-block;
+        float: left;
+    }
+
+    #actions-menu form {
+        display: inline-block;
+        float: right;
+        margin-top: 30px;
+    }
+
 h2.stats {
     margin-bottom: 10px;
     margin-top: 20px;

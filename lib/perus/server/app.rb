@@ -225,10 +225,33 @@ module Perus::Server
             redirect "#{url_prefix}groups/#{params['id']}/systems"
         end
 
+        # delete completed actions in a group
+        delete '/groups/:id/systems/actions' do
+            group = Group.with_pk!(params['id'])
+            group.systems.each do |system|
+                system.actions.each do |action|
+                    next if action.timestamp.nil?
+                    action.destroy
+                end
+            end
+
+            redirect "#{url_prefix}groups/#{params['id']}/systems"
+        end
+
         # create an action for all systems
         post '/systems/actions' do
             System.each do |system|
                 Action.add(system.id, params)
+            end
+
+            redirect "#{url_prefix}systems"
+        end
+
+        # delete all completed actions
+        delete '/systems/actions' do
+            Action.each do |action|
+                next if action.timestamp.nil?
+                action.destroy
             end
 
             redirect "#{url_prefix}systems"
