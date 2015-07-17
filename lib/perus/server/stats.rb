@@ -30,7 +30,9 @@ module Perus::Server
         end
 
         def save
-            IO.write(Server.options.stats_path, JSON.dump(@data))
+            File.open(Server.options.stats_path, 'w') do |f|
+                f.write(JSON.dump(@data))
+            end
         end
 
         # vacuuming

@@ -17,7 +17,7 @@ module Perus::Server
             Sequel.extension :inflector
 
             # connect/create the database and run any new migrations
-            @db = Sequel.sqlite(Server.options.db_path, integer_booleans: true)
+            @db = Sequel.postgres('perus', host: 'localhost')
             Sequel::Migrator.run(@db, File.join(__dir__, 'migrations'))
 
             # load models - these rely on an existing db connection
@@ -39,43 +39,6 @@ module Perus::Server
         end
 
         def self.start_timers
-            # attempt to run vacuum twice a day. this is done to increase
-            # performance rather than reclaim unused space. as old values and
-            # metrics are deleted the data become very fragmented. vacuuming
-            # restructures the db so system records in the values index should
-            # be sequentially stored
-            vacuum_task = Concurrent::TimerTask.new do
-                attempts = 0
-                complete = false
-
-                while !complete && attempts < MAX_VACUUM_ATTEMPTS
-                    begin
-                        puts "Vacuuming, attempt #{attempts + 1}"
-                        start = Time.now
-                        @db.execute('vacuum')
-                        Stats.vacuumed!(Time.now - start)
-                        complete = true
-                        puts "Vacuuming complete"
-                        
-                    rescue
-                        attempts += 1
-                        if attempts < MAX_VACUUM_ATTEMPTS
-                            puts "Vacuum failed, will reattempt after short sleep"
-                            sleep(5)
-                        end
-                    end
-                end
-
-                if !complete
-                    puts "Vacuum failed more than MAX_VACUUM_ATTEMPTS"
-                    Stats.vacuumed!('failed')
-                end
-            end
-
-            # fire every 12 hours
-            vacuum_task.execution_interval = 60 * 60 * 12
-            vacuum_task.execute
-
             # a fixed number of hours of data are kept in the database. once an
             # hour, old values and files are removed. if all values of a metric
             # are removed from a system, the accompanying metric record is also
@@ -90,6 +53,11 @@ module Perus::Server
                         start = Time.now
                         Perus::Server::DB.cleanup
                         Stats.cleaned!(Time.now - start)
+
+                        start = Time.now
+                        @db.execute('vacuum')
+                        Stats.vacuumed!(Time.now - start)
+
                         complete = true
                         puts "Cleaning complete"
                         
