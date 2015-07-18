@@ -27,7 +27,6 @@ Gem::Specification.new do |spec|
     spec.add_dependency 'rest-client', '~> 1.8'
     spec.add_dependency 'sinatra', '~> 1.4'
     spec.add_dependency 'sinatra-contrib', '~> 1.4'
-    spec.add_dependency 'sqlite3', '~> 1.3'
     spec.add_dependency 'sequel', '~> 4.23'
     spec.add_dependency 'iniparse', '~> 1.4'
     spec.add_dependency 'thin', '~> 1.6'
