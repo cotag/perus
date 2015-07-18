@@ -19,7 +19,7 @@ module Perus::Server
 
                     # list
                     get '/admin/#{plural}' do
-                        @records = #{klass}.all
+                        @records = #{klass}.dataset.order_by(:name).all
                         erb :'admin/index'
                     end
 

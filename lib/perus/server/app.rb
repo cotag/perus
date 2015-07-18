@@ -290,7 +290,7 @@ module Perus::Server
         # list of systems by group
         get '/groups/:id/systems' do
             group = Group.with_pk!(params['id'])
-            @systems = group.systems.group_by(&:orientation)
+            @systems = group.systems_dataset.order_by(:name).all.group_by(&:orientation)
             @title = group.name
             @scripts = Script.all
             @action_url = "groups/#{params['id']}/systems/actions"
