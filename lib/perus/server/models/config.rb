@@ -20,6 +20,22 @@ module Perus::Server
             systems_dataset.empty?
         end
 
+        def in_maintenance?
+            return false unless maintenance.is_a?(String)
+            from, to = maintenance.split('-')
+            now = Time.now
+
+            from_hour, from_min = from.split(':').map(&:to_i)
+            return false if now.hour < from_hour
+            return false if now.hour == from_hour && now.min < from_min
+
+            to_hour, to_min = to.split(':').map(&:to_i)
+            return false if now.hour > to_hour
+            return false if now.hour == to_hour && now.min > to_min
+
+            true
+        end
+
         def validate
             super
             validates_presence  :name

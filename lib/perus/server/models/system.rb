@@ -65,6 +65,8 @@ module Perus::Server
         # metrics
         # ---------------------------------------
         def save_metric_errors(params, timestamp)
+            # ignore errors during maintenance window
+            return if config.in_maintenance?
             errors = JSON.parse(params['metric_errors'])
 
             errors.each do |module_name, module_errors|
