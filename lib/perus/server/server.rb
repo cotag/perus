@@ -7,12 +7,16 @@ DEFAULT_SERVER_OPTIONS = {
         'uploads_url' => 'http://localhost:3000/uploads/',
         'db_path' => './perus.db',
         'listen' => '0.0.0.0',
-        'port' => 3000,
+        'port' => 5000,
         'site_name' => 'Perus',
         'url_prefix' => '/',
         'keep_hours' => 24,
         'cache_alerts_secs' => 20,
         'stats_path' => '/var/perus.stats'
+    },
+    'db' => {
+        'username' => '',
+        'password' => ''
     }
 }
 
