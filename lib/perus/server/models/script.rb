@@ -1,7 +1,7 @@
 module Perus::Server
     class Script < Sequel::Model
         plugin :validation_helpers
-        one_to_many :script_commands, order: 'name asc'
+        one_to_many :script_commands, order: :order
         one_to_many :actions
 
         def code_name

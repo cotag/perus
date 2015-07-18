@@ -2,7 +2,7 @@ module Perus::Server
     class Config < Sequel::Model
         plugin :validation_helpers
         one_to_many :systems
-        one_to_many :config_metrics, order: 'name asc'
+        one_to_many :config_metrics, order: :order
 
         def metric_hashes
             config_metrics.collect(&:config_hash)
