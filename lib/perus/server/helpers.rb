@@ -46,5 +46,21 @@ module Perus::Server
         def url_prefix
             Server.options.url_prefix
         end
+
+        def protected!
+            return if authorised?
+            headers['WWW-Authenticate'] = 'Basic realm="Restricted Area"'
+            halt 401, "Not authorized\n"
+        end
+
+        def authorised?
+            return true if Server.options.auth['username'].empty?
+            @auth ||=  Rack::Auth::Basic::Request.new(request.env)
+            @auth.provided? && @auth.basic? && @auth.credentials &&
+                @auth.credentials == [
+                    Server.options.auth['username'],
+                    Server.options.auth['password']
+                ]
+        end
     end
 end

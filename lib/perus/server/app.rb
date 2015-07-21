@@ -6,19 +6,6 @@ require 'uri'
 
 module Perus::Server
     class App < Sinatra::Application
-        def self.new(*)
-            unless Server.options.auth['username'].empty?
-                app = Rack::Auth::Digest::MD5.new(super) do |username|
-                    {Server.options.auth['username'] => Server.options.auth['password']}[username]
-                end
-                app.realm = 'Protected Area'
-                app.opaque = 'secretkey'
-                app
-            else
-                super
-            end
-        end
-
         #----------------------
         # config
         #----------------------
@@ -54,6 +41,7 @@ module Perus::Server
         end
 
         post '/admin/scripts/:id/commands' do
+            protected!
             script = Script.with_pk!(params['id'])
             script_command = ScriptCommand.new
             script_command.script_id = params['id']
@@ -74,6 +62,7 @@ module Perus::Server
         end
 
         post '/admin/scripts/:script_id/commands/:id' do
+            protected!
             script_command = ScriptCommand.with_pk!(params['id'])
             if params['action'] == 'Delete'
                 script_command.destroy
@@ -85,6 +74,7 @@ module Perus::Server
         end
 
         post '/admin/configs/:id/metrics' do
+            protected!
             config = Config.with_pk!(params['id'])
             config_metric = ConfigMetric.new
             config_metric.config_id = params['id']
@@ -105,6 +95,7 @@ module Perus::Server
         end
 
         post '/admin/configs/:config_id/metrics/:id' do
+            protected!
             config_metric = ConfigMetric.with_pk!(params['id'])
             if params['action'] == 'Delete'
                 config_metric.destroy
@@ -116,6 +107,7 @@ module Perus::Server
         end
 
         get '/admin/stats' do
+            protected!
             @stats = Stats.new
             @queue_length = Server.ping_queue.length
             erb :stats
@@ -127,6 +119,7 @@ module Perus::Server
         #----------------------
         # csv for graphs shown on system page
         get '/systems/:id/values' do
+            protected!
             system  = System.with_pk!(params['id'])
             metrics = params[:metrics].to_s.split(',')
 
@@ -213,6 +206,7 @@ module Perus::Server
 
         # render all errors in html to replace the shortened subset on the system page
         get '/systems/:id/errors' do
+            protected!
             system = System.with_pk!(params['id'])
             errors = system.collection_errors
             erb :errors, layout: false, locals: {errors: errors}
@@ -220,6 +214,7 @@ module Perus::Server
 
         # clear collection errors
         delete '/systems/:id/errors' do
+            protected!
             system = System.with_pk!(params['id'])
             system.collection_errors.each(&:delete)
             redirect "#{url_prefix}systems/#{system.id}"
@@ -227,12 +222,14 @@ module Perus::Server
 
         # create a new action
         post '/systems/:id/actions' do
+            protected!
             Action.add(params['id'], params)
             redirect "#{url_prefix}systems/#{params['id']}#actions"
         end
 
         # create an action for all systems in a group
         post '/groups/:id/systems/actions' do
+            protected!
             group = Group.with_pk!(params['id'])
             group.systems.each do |system|
                 Action.add(system.id, params)
@@ -243,6 +240,7 @@ module Perus::Server
 
         # delete completed actions in a group
         delete '/groups/:id/systems/actions' do
+            protected!
             group = Group.with_pk!(params['id'])
             group.systems.each do |system|
                 system.actions.each do |action|
@@ -256,6 +254,7 @@ module Perus::Server
 
         # create an action for all systems
         post '/systems/actions' do
+            protected!
             System.each do |system|
                 Action.add(system.id, params)
             end
@@ -265,6 +264,7 @@ module Perus::Server
 
         # delete all completed actions
         delete '/systems/actions' do
+            protected!
             Action.each do |action|
                 next if action.timestamp.nil?
                 action.destroy
@@ -275,6 +275,7 @@ module Perus::Server
 
         # delete an action. deletion also clears any uploaded files.
         delete '/systems/:system_id/actions/:id' do
+            protected!
             action = Action.with_pk!(params['id'])
             action.destroy
             redirect "#{url_prefix}systems/#{params['system_id']}#actions"
@@ -286,6 +287,7 @@ module Perus::Server
         #----------------------
         # overview
         get '/' do
+            protected!
             systems = System.all
             @alerts = Alert.all.sort_by(&:severity_level).reverse
             erb :index
@@ -293,6 +295,7 @@ module Perus::Server
 
         # list of systems
         get '/systems' do
+            protected!
             @systems = System.all.group_by(&:orientation)
             @title = 'All Systems'
             @scripts = Script.all
@@ -302,6 +305,7 @@ module Perus::Server
 
         # list of systems by group
         get '/groups/:id/systems' do
+            protected!
             group = Group.with_pk!(params['id'])
             @systems = group.systems_dataset.order_by(:name).all.group_by(&:orientation)
             @title = group.name
@@ -312,6 +316,7 @@ module Perus::Server
 
         # info page for a system
         get '/systems/:id' do
+            protected!
             @system  = System.with_pk!(params['id'])
             @uploads = @system.upload_urls
             metrics = @system.metrics
@@ -348,6 +353,7 @@ module Perus::Server
 
         # helper to make uploads publicly accessible
         get '/uploads/*' do
+            protected!
             path = params['splat'][0]
             raise 'Invalid path' if path.include?('..')
             full_path = File.join(Server.options.uploads_dir, path)

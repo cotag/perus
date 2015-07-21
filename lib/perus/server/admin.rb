@@ -19,12 +19,14 @@ module Perus::Server
 
                     # list
                     get '/admin/#{plural}' do
+                        protected!
                         @records = #{klass}.dataset.order_by(:name).all
                         erb :'admin/index'
                     end
 
                     # new form
                     get '/admin/#{plural}/new' do
+                        protected!
                         @record = #{klass}.new
                         @form = Form.new(@record)
                         erb :'admin/new'
@@ -32,6 +34,7 @@ module Perus::Server
 
                     # create
                     post '/admin/#{plural}' do
+                        protected!
                         @record = #{klass}.new(params[:record])
                         if @record.valid?
                             begin
@@ -52,6 +55,7 @@ module Perus::Server
 
                     # edit
                     get '/admin/#{plural}/:id' do
+                        protected!
                         @record = #{klass}.with_pk!(params['id'])
                         @form = Form.new(@record)
                         erb :'admin/edit'
@@ -59,6 +63,7 @@ module Perus::Server
 
                     # update
                     put '/admin/#{plural}/:id' do
+                        protected!
                         @record = #{klass}.with_pk!(params['id'])
                         if @record.valid?
                             begin
@@ -75,6 +80,7 @@ module Perus::Server
 
                     # delete
                     delete '/admin/#{plural}/:id' do
+                        protected!
                         @record = #{klass}.with_pk!(params['id'])
                         @record.destroy
                         redirect url_prefix + 'admin/#{plural}'
