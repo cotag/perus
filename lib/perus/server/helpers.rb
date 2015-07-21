@@ -58,8 +58,8 @@ module Perus::Server
             @auth ||=  Rack::Auth::Basic::Request.new(request.env)
             @auth.provided? && @auth.basic? && @auth.credentials &&
                 @auth.credentials == [
-                    Server.options.auth['username'],
-                    Server.options.auth['password']
+                    Server.options.auth['username'].to_s,
+                    Server.options.auth['password'].to_s
                 ]
         end
     end
