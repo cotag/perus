@@ -17,6 +17,10 @@ DEFAULT_SERVER_OPTIONS = {
     'db' => {
         'username' => '',
         'password' => ''
+    },
+    'auth' => {
+        'username' => '',
+        'password' => ''
     }
 }
 

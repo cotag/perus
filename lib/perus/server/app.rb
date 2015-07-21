@@ -6,6 +6,19 @@ require 'uri'
 
 module Perus::Server
     class App < Sinatra::Application
+        def self.new(*)
+            unless Server.options.auth['username'].empty?
+                app = Rack::Auth::Digest::MD5.new(super) do |username|
+                    {Server.options.auth['username'] => Server.options.auth['password']}[username]
+                end
+                app.realm = 'Protected Area'
+                app.opaque = 'secretkey'
+                app
+            else
+                super
+            end
+        end
+
         #----------------------
         # config
         #----------------------
