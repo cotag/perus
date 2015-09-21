@@ -23,6 +23,8 @@ module Perus::Pinger
                 end
             end
 
+            return {} if @page.nil?
+
             {
                 chrome_warnings: warning_count,
                 chrome_errors: error_count,

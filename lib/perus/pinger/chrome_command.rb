@@ -16,9 +16,18 @@ module Perus::Pinger
 
         def execute(commands, &message_callback)
             # discover the first page shown in chrome
-            pages = JSON.parse(RestClient.get("http://#{options.host}:#{options.port}/json"))
-            pages.reject! {|page| page['url'].include?('chrome-extension')}
-            @page = pages.first
+            tries = 0
+            @page = nil
+            begin
+                pages = JSON.parse(RestClient.get("http://#{options.host}:#{options.port}/json"))
+                pages.reject! {|page| page['url'].include?('chrome-extension')}
+                @page = pages.first
+            rescue Errno::ECONNREFUSED, Errno::ECONNRESET => e
+                tries += 1
+                sleep 3
+                retry if tries < 4
+                return
+            end
 
             EM.run do
                 @ws = Faye::WebSocket::Client.new(@page['webSocketDebuggerUrl'])
