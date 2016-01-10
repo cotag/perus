@@ -29,6 +29,8 @@ module Perus::Pinger
                 return
             end
 
+            return if @page.nil?
+            
             EM.run do
                 @ws = Faye::WebSocket::Client.new(@page['webSocketDebuggerUrl'])
 
