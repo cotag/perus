@@ -103,7 +103,19 @@ module Perus::Pinger
             config_url = (@server_uri + config_path).to_s
 
             # load the system config by requesting it from the perus server
-            json = JSON.parse(RestClient.get(config_url))
+            tries = 0
+            json = begin
+                JSON.parse(RestClient.get(config_url))
+            rescue => e
+                if tries < 5
+                    tries += 1
+                    sleep 2
+                    retry
+                else
+                    raise e
+                end 
+            end
+
             json['metrics'] ||= []
             json['actions'] ||= []
             @system_id = json['id']
