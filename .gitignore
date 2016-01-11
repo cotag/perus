@@ -11,3 +11,5 @@
 *.db
 uploads
 
+
+*.gem
