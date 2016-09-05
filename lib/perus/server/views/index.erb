@@ -13,7 +13,7 @@
                 <% else %>
                     <ul class="alerts">
                         <% alert.active_alerts.each do |active_alert| %>
-                            <% if alert.system %>
+                            <% if active_alert.system %>
                                 <li class="<%= alert.severity %>"><a href="<%= url_prefix %>systems/<%= active_alert.system.id %>"><%= active_alert.system.name %> (<%= active_alert.active_for %>)</a></li>
                             <% else %>
                                 <li class="<%= alert.severity %>">Alert for deleted system: <%= active_alert.system_id %> (<%= active_alert.active_for %>)</li>

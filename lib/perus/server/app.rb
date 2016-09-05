@@ -193,15 +193,21 @@ module Perus::Server
 
         # config of system based on request ip
         get '/systems/config_for_ip' do
-            if request.ip == '127.0.0.1' && ENV['RACK_ENV'] == 'production'
-                ip = request.env['HTTP_X_FORWARDED_FOR']
-            else
-                ip = request.ip
-            end
+            ip = nil
+            begin
+                if request.ip == '127.0.0.1' && ENV['RACK_ENV'] == 'production'
+                    ip = request.env['HTTP_X_FORWARDED_FOR']
+                else
+                    ip = request.ip
+                end
 
-            system = System.where(ip: ip).first
-            content_type :json
-            system.config_hash.to_json
+                system = System.where(ip: ip).first
+                content_type :json
+                system.config_hash.to_json
+            rescue => e
+                puts "\nNo config for: #{ip}\n"
+                raise e
+            end
         end
 
         # render all errors in html to replace the shortened subset on the system page
