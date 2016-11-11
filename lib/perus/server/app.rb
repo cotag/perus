@@ -157,11 +157,7 @@ module Perus::Server
             timestamp = Time.now.to_i
             ping_params = params.dup
 
-            if request.ip == '127.0.0.1' && ENV['RACK_ENV'] == 'production'
-                system_ip = request.env['HTTP_X_FORWARDED_FOR']
-            else
-                system_ip = request.ip
-            end
+            system_ip = request.env['HTTP_X_FORWARDED_FOR'] || request.ip
 
             Server.ping_queue << Proc.new do
                 # update the system with its last known ip and update time
@@ -193,19 +189,13 @@ module Perus::Server
 
         # config of system based on request ip
         get '/systems/config_for_ip' do
-            ip = nil
+            ip = request.env['HTTP_X_FORWARDED_FOR'] || request.ip
             begin
-                if request.ip == '127.0.0.1' && ENV['RACK_ENV'] == 'production'
-                    ip = request.env['HTTP_X_FORWARDED_FOR']
-                else
-                    ip = request.ip
-                end
-
                 system = System.where(ip: ip).first
                 content_type :json
                 system.config_hash.to_json
             rescue => e
-                puts "\nNo config for: #{ip}\n"
+                STDERR.puts "\nNo config for: #{ip}\n"
                 raise e
             end
         end
