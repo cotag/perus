@@ -17,7 +17,7 @@ module Perus::Server
             Sequel.extension :inflector
 
             # connect/create the database and run any new migrations
-            @db = Sequel.postgres('perus', host: 'localhost', username: Server.options.db['username'], password: Server.options.db['password'])
+            @db = Sequel.postgres('perus', host: (Server.options.db['host'] || ENV['POSTGRES_HOST'] || 'localhost'), username: Server.options.db['username'], password: Server.options.db['password'])
             Sequel::Migrator.run(@db, File.join(__dir__, 'migrations'))
 
             # load models - these rely on an existing db connection
