@@ -22,6 +22,8 @@ body > header {
     bottom: 0px;
     left: 0px;
     width: 200px;
+
+    overflow: scroll;
 }
 
     body > header h1 {
