@@ -1,8 +1,8 @@
 Sequel.migration do
-    change do
-        change_column :values, :timestamp, :bigint
-        change_column :errors, :timestamp, :bigint
-        change_column :actions, :timestamp, :bigint
-        change_column :active_alerts, :timestamp, :bigint
+    up do
+        execute("ALTER TABLE values CHANGE timestamp timestamp BIGINT")
+        execute("ALTER TABLE errors CHANGE timestamp timestamp BIGINT")
+        execute("ALTER TABLE actions CHANGE timestamp timestamp BIGINT")
+        execute("ALTER TABLE active_alerts CHANGE timestamp timestamp BIGINT")
     end
 end
