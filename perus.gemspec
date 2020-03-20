@@ -25,7 +25,7 @@ Gem::Specification.new do |spec|
     spec.add_dependency 'concurrent-ruby', '~> 0.8'
     spec.add_dependency 'faye-websocket', '~> 0.10'
     spec.add_dependency 'websocket-driver', '>= 0.6.4'
-    spec.add_dependency 'rest-client', '~> 1.8'
+    spec.add_dependency 'rest-client', '~> 2.1.0'
     spec.add_dependency 'sinatra', '~> 1.4'
     spec.add_dependency 'sinatra-contrib', '~> 1.4'
     spec.add_dependency 'sequel', '~> 4.23'
