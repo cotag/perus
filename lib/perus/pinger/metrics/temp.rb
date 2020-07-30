@@ -2,7 +2,7 @@ module Perus::Pinger
     class Temp < Command
         description 'Measures the temperature of "device" on the client. By
                      default, this will be a CPU.'
-        option :device, default: 'Physical id 0'
+        option :device, default: 'Package id 0'
         metric!
         
         def run
