@@ -8,7 +8,7 @@ module Perus
 
         def load(path, defaults)
             if File.exists?(path)
-                user_options = IniParse.parse(IO.read(path)).to_h
+                user_options = IniParse.parse(IO.read(path))
             else
                 user_options = {}
             end
