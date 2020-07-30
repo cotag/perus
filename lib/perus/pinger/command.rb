@@ -26,7 +26,7 @@ module Perus::Pinger
 
             if restricted
                 allowed = Pinger.options[@command.name.demodulize][@name.to_s]
-                raise "the value passed to #{@name} is not allowed" unless allowed.include?(value)
+                raise "the value, #{value}, passed to #{@name} is not allowed" unless allowed.include?(value)
             end
 
             results[name] = value
