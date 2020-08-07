@@ -2,7 +2,7 @@ module Perus::Pinger
     class UpstartStart < Command
         description 'Start the upstart job specified with "job". Valid values
                      for "job" are contained in the pinger config file.'
-        option :job, restricted: true
+        option :job, restricted: false
 
         def run
             result = shell("sudo start #{options.job}")

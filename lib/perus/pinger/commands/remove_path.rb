@@ -5,7 +5,7 @@ module Perus::Pinger
         description 'Deletes a file or folder. If "path" is a folder, all files
                      and folders within the folder are deleted as well. Valid
                      values for "path" are contained in the pinger config file.'
-        option :path, restricted: true
+        option :path, restricted: false
 
         def run
             FileUtils.rm_rf([File.expand_path(options.path)], secure: true)

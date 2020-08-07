@@ -3,7 +3,7 @@ module Perus::Pinger
         description 'Reports "yes" if "process_path" is running, "no"
                      otherwise. Valid values for "process_path" are contained
                      in the pinger config file.'
-        option :process_path, restricted: true
+        option :process_path, restricted: false
         metric!
         
         def run
